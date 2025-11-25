@@ -68,6 +68,7 @@ app.set("view engine", "ejs");
 app.use((req, res, next) => {
     if (req.session.patientName) {
         res.locals.name = req.session.patientName;
+        res.locals.doctorid = req.session.doctorId;
         
     }
   
@@ -155,7 +156,8 @@ app.get("/patientVerify", async (req, res) => {
 });
 
 app.post("/sendAppointment", (req, res) => {
-  res.send("Appointment sent successfully to mail!");
+  // alert("");
+  res.send("Appointment booked successfully");
 });
 
 

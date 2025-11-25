@@ -5,6 +5,7 @@ import { appointment } from "../models/appointment.js";
 import { otp } from "../models/otp.js";
 import { sendOTPEmail, verifyEmailConnection } from "../services/emailService.js";
 import passport from "../services/googleAuth.js";
+import { sendAppointmentConfirmationEmail } from "../services/emailService.js";
 
 
 const patientRouter = Router();
@@ -276,6 +277,10 @@ patientRouter.post('/book-appointment', async (req,res) => {
     try {
         const { doctorId, patientName, patientEmail, patientPhone, patientAge, patientGender, patientAddress, urgency, description } = req.body;
         console.log(req.body);
+
+      
+
+       
 
         // Find or create patient by phone (primary identifier)
         let patientDoc = await patient.findOne({ phone: patientPhone });

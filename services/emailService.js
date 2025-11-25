@@ -133,7 +133,6 @@ export const sendOTPEmail = async (email, otp) => {
   }
 };
 
-
 // Send Appointment Confirmation Email
 export const sendAppointmentConfirmationEmail = async (appointmentData, doctorDetails) => {
   try {

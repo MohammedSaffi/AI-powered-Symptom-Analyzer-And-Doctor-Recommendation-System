@@ -1,11 +1,11 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
-import { doctor } from "../models/doctor.js";
+import { doctor as DoctorModel } from "../models/doctor.js";
 import { appointment } from "../models/appointment.js";
 import generateCode from "../services/uniqueID.js";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
-import { sendAppointmentConfirmationEmail } from '../services/emailService.js'; // Adjust path as needed
+import { sendAppointmentConfirmationEmail } from '../services/emailService.js';
 
 const doctorRouter = Router();
 
@@ -35,7 +35,7 @@ doctorRouter.post("/register", async (req, res) => {
     const { name, email, password, phone, gender, specialization, location } = req.body;
 
     // Check if doctor already exists
-    const existingDoctor = await doctor.findOne({ email });
+    const existingDoctor = await DoctorModel.findOne({ email });
     if (existingDoctor) {
       return res.status(400).json({ 
         success: false, 
@@ -51,7 +51,7 @@ doctorRouter.post("/register", async (req, res) => {
     const doctorid = generateCode();
 
     // Create doctor
-    const newDoctor = await doctor.create({
+    const newDoctor = await DoctorModel.create({
       name,
       email,
       passwordHash,
@@ -83,7 +83,7 @@ doctorRouter.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     // Find doctor by email
-    const foundDoctor = await doctor.findOne({ email });
+    const foundDoctor = await DoctorModel.findOne({ email });
     if (!foundDoctor) {
       return res.status(401).json({
         success: false,
@@ -131,7 +131,8 @@ doctorRouter.post("/login", async (req, res) => {
 doctorRouter.get("/dashboard", isDoctorLoggedIn, async (req, res) => {
   try {
     const doctorId = req.session.doctorId;
-    const foundDoctor = await doctor.findOne({ doctorid: doctorId });
+    
+    const foundDoctor = await DoctorModel.findOne({ doctorid: doctorId });
 
     if (!foundDoctor) {
       return res.redirect("/doctorLogin");
@@ -156,7 +157,7 @@ doctorRouter.get("/dashboard", isDoctorLoggedIn, async (req, res) => {
 doctorRouter.get("/profile", isDoctorLoggedIn, async (req, res) => {
   try {
     const doctorId = req.session.doctorId;
-    const foundDoctor = await doctor.findOne({ doctorid: doctorId }).select("-passwordHash");
+    const foundDoctor = await DoctorModel.findOne({ doctorid: doctorId }).select("-passwordHash");
     
     if (!foundDoctor) {
       return res.status(404).json({ success: false, message: "Doctor not found" });
@@ -175,7 +176,7 @@ doctorRouter.post("/profile/update", isDoctorLoggedIn, async (req, res) => {
     const doctorId = req.session.doctorId;
     const { name, phone, specialization, location } = req.body;
 
-    const updatedDoctor = await doctor.findOneAndUpdate(
+    const updatedDoctor = await DoctorModel.findOneAndUpdate(
       { doctorid: doctorId },
       { name, phone, specialization, location },
       { new: true }
@@ -213,7 +214,7 @@ doctorRouter.post("/profile/picture", isDoctorLoggedIn, upload.single("profilePi
     });
 
     // Update doctor profile picture
-    const updatedDoctor = await doctor.findOneAndUpdate(
+    const updatedDoctor = await DoctorModel.findOneAndUpdate(
       { doctorid: doctorId },
       { profilePicture: cloudinaryRes.secure_url },
       { new: true }
@@ -249,20 +250,25 @@ doctorRouter.get("/appointments", isDoctorLoggedIn, async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Helper function to get doctor details
+async function getDoctorById(doctorId) {
+  try {
+    console.log("Fetching doctor details for:", doctorId);
+    
+    const doctorData = await DoctorModel.findOne({ doctorid: doctorId });
+    
+    if (!doctorData) {
+      console.log("No doctor found with ID:", doctorId);
+      return null;
+    }
+    
+    console.log("Doctor found:", doctorData.name);
+    return doctorData;
+  } catch (error) {
+    console.error("Error fetching doctor details:", error);
+    return null;
+  }
+}
 
 // Confirm Appointment
 doctorRouter.post("/appointments/:appointmentId/confirm", isDoctorLoggedIn, async (req, res) => {
@@ -270,7 +276,7 @@ doctorRouter.post("/appointments/:appointmentId/confirm", isDoctorLoggedIn, asyn
     const { appointmentId } = req.params;
     const { timeSlot, appointmentDate, confirmationMessage } = req.body;
     const doctorId = req.session.doctorId;
-    
+    console.log("The doctor is in appoints route " , doctorId);
     console.log("Confirming appointment:", appointmentId, timeSlot, appointmentDate);
 
     // Find appointment and verify it belongs to this doctor
@@ -298,7 +304,9 @@ doctorRouter.post("/appointments/:appointmentId/confirm", isDoctorLoggedIn, asyn
     // Send email notification to patient
     try {
       // Get doctor details for the email
-      const doctorDetails = await getDoctorById(doctorId); // You need to implement this function
+      const doctorDetails = await getDoctorById(doctorId);
+      
+      console.log("Doctor details:", doctorDetails);
       
       const emailResult = await sendAppointmentConfirmationEmail(foundAppointment, doctorDetails);
       
@@ -317,7 +325,7 @@ doctorRouter.post("/appointments/:appointmentId/confirm", isDoctorLoggedIn, asyn
       success: true,
       message: "Appointment confirmed successfully. Patient will be notified.",
       appointment: foundAppointment,
-      emailSent: true // You can modify this based on actual email result
+      emailSent: true
     });
   } catch (error) {
     console.error("Appointment confirmation error:", error);
@@ -328,28 +336,6 @@ doctorRouter.post("/appointments/:appointmentId/confirm", isDoctorLoggedIn, asyn
   }
 });
 
-// Helper function to get doctor details (you need to implement this based on your doctor model)
-async function getDoctorById(doctorId) {
-  try {
-    // Replace this with your actual doctor model and query
-    // Assuming you have a Doctor model
-    const Doctor = mongoose.model('Doctor'); // Adjust based on your model name
-    const doctor = await Doctor.findOne({ doctorid: doctorId });
-    return doctor;
-  } catch (error) {
-    console.error("Error fetching doctor details:", error);
-    return null;
-  }
-}
-
-
-
-
-
-
-
-
-
 // Logout
 doctorRouter.post("/logout", (req, res) => {
   req.session.destroy((err) => {
@@ -359,7 +345,5 @@ doctorRouter.post("/logout", (req, res) => {
     res.json({ success: true, message: "Logged out successfully" });
   });
 });
-
-// Get login page (moved to index.js for root access)
 
 export default doctorRouter;
