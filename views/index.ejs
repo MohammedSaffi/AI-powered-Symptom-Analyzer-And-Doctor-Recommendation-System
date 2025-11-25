@@ -16,37 +16,37 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
-    body {
-      background-image: url('258.webp');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      position: relative;
-    }
+  body {
+  background-image: url('258.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+}
 
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: inherit;
-      filter: blur(3px);
-      z-index: -1;
-    }
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: inherit;
+  filter: blur(3px);
+  z-index: -1;
+}
 
-    body::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.3);
-      z-index: -1;
-    }
+body::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3); /* Dark overlay for better contrast */
+  z-index: -1;
+}
     
     .tab-btn {
       position: relative;
@@ -113,41 +113,7 @@
     .pulse-animation {
       animation: pulse 2s infinite;
     }
-
-    /* Map Container Styles */
-    .map-container {
-      height: 250px;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-top: 8px;
-      border: 1px solid #d1d5db;
-    }
-
-    .location-search {
-      position: relative;
-      margin-bottom: 10px;
-    }
-
-    .location-search input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-
-    .coordinates-display {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .coordinates-display input {
-      background-color: #f9fafb;
-      cursor: not-allowed;
-    }
-
+    
     @keyframes pulse {
       0% {
         box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
@@ -163,7 +129,7 @@
 </head>
 
 <body class="min-h-screen flex justify-center items-center p-6">
-  <div class="glass-effect shadow-2xl rounded-2xl w-full max-w-2xl overflow-hidden transition-all duration-300 border border-white/50">
+  <div class="glass-effect shadow-2xl rounded-2xl w-full max-w-md overflow-hidden transition-all duration-300 border border-white/50">
     <!-- Header with Logo -->
     <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-center text-white">
       <div class="flex justify-center mb-4">
@@ -235,7 +201,7 @@
       </form>
 
       <!-- Doctor Register -->
-      <form id="doctorForm" class="form-container hidden space-y-5" action="/doctor/register" method="POST">
+      <form id="doctorForm" class="form-container hidden space-y-5">
         <h1 class="text-2xl font-bold text-center text-gray-800 mb-2">Doctor Registration</h1>
         <p class="text-center text-gray-500 mb-6">Join our medical network</p>
         
@@ -285,37 +251,25 @@
                 class="input-field w-full border border-gray-300 rounded-lg pl-10 pr-3 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none" name="phone"/>
             </div>
           </div>
-
-          <!-- Enhanced Location Section with Google Maps -->
+          
           <div>
-            <label for="location" class="block text-gray-700 font-medium mb-2">Practice Location</label>
-            <div class="location-search">
-              <input type="text" id="locationSearch" placeholder="Search for your practice location..." 
-                     class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
-            </div>
-            <div class="map-container" id="locationMap"></div>
-            <div class="coordinates-display">
-              <div>
-                <label for="locationLat" class="block text-gray-700 font-medium mb-2 mt-3">Latitude</label>
-                <input type="text" id="locationLat" name="locationLat" readonly
-                  class="input-field w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50"/>
+            <label for="Location" class="block text-gray-700 font-medium mb-2">Location</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-map-marker-alt text-gray-400"></i>
               </div>
-              <div>
-                <label for="locationLng" class="block text-gray-700 font-medium mb-2 mt-3">Longitude</label>
-                <input type="text" id="locationLng" name="locationLng" readonly
-                  class="input-field w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50"/>
-              </div>
+              <input type="text" id="Location" placeholder="Enter your location"
+                class="input-field w-full border border-gray-300 rounded-lg pl-10 pr-3 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none" name="location"/>
             </div>
-            <input type="hidden" id="location" name="location">
           </div>
           
           <div>
-            <label for="specialization" class="block text-gray-700 font-medium mb-2">Specialization</label>
+            <label for="Specialization" class="block text-gray-700 font-medium mb-2">Specialization</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-stethoscope text-gray-400"></i>
               </div>
-              <input type="text" id="specialization" placeholder="Enter your specialization"
+              <input type="text" id="Specialization" placeholder="Enter your specialization"
                 class="input-field w-full border border-gray-300 rounded-lg pl-10 pr-3 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none" name="specialization"/>
             </div>
           </div>
@@ -344,7 +298,6 @@
 
       <!-- Patient Register -->
       <div id="patientForm" class="form-container hidden space-y-5">
-        <!-- Patient form content remains the same -->
         <h1 class="text-2xl font-bold text-center text-gray-800 mb-2">Patient Registration</h1>
         <p class="text-center text-gray-500 mb-6">Get started with your healthcare journey</p>
         
@@ -376,7 +329,7 @@
               <i class="fas fa-key text-blue-600 text-xl"></i>
             </div>
             <p class="text-gray-600">We've sent a verification code to your email</p>
-            <p class="font-medium text-gray-800 mt-1" id="emailDisplay"></p>
+            <p class="font-medium text-gray-800 mt-1">${patientEmailValue}</p>
           </div>
           
           <div>
@@ -422,9 +375,8 @@
     </div>
   </div>
 
-  <!-- JavaScript for toggling and Google Maps -->
+  <!-- JavaScript for toggling -->
   <script>
-    // Tab switching functionality
     const adminBtn = document.getElementById('adminBtn');
     const doctorBtn = document.getElementById('doctorBtn');
     const patientBtn = document.getElementById('patientBtn');
@@ -445,139 +397,11 @@
         buttons[i].classList.toggle('text-gray-600', i !== index);
         buttons[i].classList.toggle('font-medium', i !== index);
       });
-      
-      // Initialize map when doctor form is shown
-      if (index === 1) {
-        setTimeout(initMap, 100);
-      }
     }
 
     adminBtn.addEventListener('click', () => showForm(0));
     doctorBtn.addEventListener('click', () => showForm(1));
     patientBtn.addEventListener('click', () => showForm(2));
-
-    // Google Maps variables
-    let map;
-    let marker;
-    let geocoder;
-    let searchBox;
-
-    // Initialize Google Maps
-    function initMap() {
-      if (document.getElementById('locationMap').dataset.initialized) return;
-      
-      // Default coordinates (center of the map)
-      const defaultLocation = { lat: 40.7128, lng: -74.0060 }; // New York City
-      
-      // Create map
-      map = new google.maps.Map(document.getElementById('locationMap'), {
-        zoom: 12,
-        center: defaultLocation,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        streetViewControl: false,
-        fullscreenControl: true,
-        mapTypeControl: false
-      });
-
-      // Create marker
-      marker = new google.maps.Marker({
-        position: defaultLocation,
-        map: map,
-        draggable: true,
-        title: "Drag to set your practice location"
-      });
-
-      // Initialize geocoder
-      geocoder = new google.maps.Geocoder();
-
-      // Create search box
-      const input = document.getElementById('locationSearch');
-      searchBox = new google.maps.places.SearchBox(input);
-
-      // Bias the SearchBox results towards current map's viewport
-      map.addListener('bounds_changed', function() {
-        searchBox.setBounds(map.getBounds());
-      });
-
-      // Listen for the event when a place is selected
-      searchBox.addListener('places_changed', function() {
-        const places = searchBox.getPlaces();
-
-        if (places.length === 0) {
-          return;
-        }
-
-        // Clear existing markers
-        marker.setMap(null);
-
-        const bounds = new google.maps.LatLngBounds();
-        places.forEach(function(place) {
-          if (!place.geometry) {
-            console.log("Returned place contains no geometry");
-            return;
-          }
-
-          // Create a marker for each place
-          marker = new google.maps.Marker({
-            map: map,
-            title: place.name,
-            position: place.geometry.location,
-            draggable: true
-          });
-
-          // Update coordinates
-          updateCoordinates(place.geometry.location);
-
-          if (place.geometry.viewport) {
-            bounds.union(place.geometry.viewport);
-          } else {
-            bounds.extend(place.geometry.location);
-          }
-        });
-        map.fitBounds(bounds);
-      });
-
-      // Update coordinates when marker is dragged
-      marker.addListener('dragend', function() {
-        updateCoordinates(marker.getPosition());
-      });
-
-      // Update marker position when map is clicked
-      map.addListener('click', function(event) {
-        marker.setPosition(event.latLng);
-        updateCoordinates(event.latLng);
-      });
-
-      // Set initial coordinates
-      updateCoordinates(defaultLocation);
-      
-      // Mark as initialized
-      document.getElementById('locationMap').dataset.initialized = true;
-    }
-
-    // Update coordinate inputs and hidden location field
-    function updateCoordinates(latLng) {
-      document.getElementById('locationLat').value = latLng.lat().toFixed(6);
-      document.getElementById('locationLng').value = latLng.lng().toFixed(6);
-      
-      // Reverse geocode to get address
-      geocoder.geocode({ location: latLng }, function(results, status) {
-        if (status === 'OK' && results[0]) {
-          document.getElementById('location').value = results[0].formatted_address;
-          document.getElementById('locationSearch').value = results[0].formatted_address;
-        }
-      });
-    }
-
-    // Load Google Maps API
-    function loadGoogleMapsAPI() {
-      const script = document.createElement('script');
-      // Replace with your actual Google Maps API key
-      script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places&callback=initMap`;
-      script.async = true;
-      script.defer = true;
-      document.head.appendChild(script);
-    }
 
     // Doctor Registration Form Handler
     doctorForm.addEventListener('submit', async function(e) {
@@ -592,16 +416,14 @@
       submitBtn.textContent = 'Registering...';
       messageDiv.classList.add('hidden');
       
-      // Get form data including location coordinates
+      // Get form data
       const formData = {
         name: document.getElementById('docName').value,
         email: document.getElementById('docEmail').value,
         password: document.getElementById('docPassword').value,
         phone: document.getElementById('docPhone').value,
-        location: document.getElementById('location').value,
-        locationLat: document.getElementById('locationLat').value,
-        locationLng: document.getElementById('locationLng').value,
-        specialization: document.getElementById('specialization').value,
+        location: document.getElementById('Location').value,
+        specialization: document.getElementById('Specialization').value,
         gender: this.querySelector('input[name="gender"]:checked').value
       };
       
@@ -621,12 +443,6 @@
           messageDiv.textContent = data.message;
           messageDiv.classList.remove('hidden');
           this.reset();
-          
-          // Reset map coordinates
-          document.getElementById('locationLat').value = '';
-          document.getElementById('locationLng').value = '';
-          document.getElementById('location').value = '';
-          document.getElementById('locationSearch').value = '';
           
           // Redirect to login after 2 seconds
           setTimeout(() => {
@@ -648,7 +464,7 @@
       }
     });
 
-    // Patient Registration - OTP Flow (unchanged)
+    // Patient Registration - OTP Flow
     let patientEmailValue = '';
 
     document.getElementById('sendOtpBtn')?.addEventListener('click', async function() {
@@ -665,6 +481,7 @@
         return;
       }
 
+      // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         messageDiv.className = 'p-4 rounded-lg mb-4 bg-red-100 border border-red-400 text-red-700';
@@ -692,9 +509,15 @@
           messageDiv.textContent = data.message;
           messageDiv.classList.remove('hidden');
           
+          // Show OTP step
           document.getElementById('emailStep').classList.add('hidden');
           document.getElementById('otpStep').classList.remove('hidden');
-          document.getElementById('emailDisplay').textContent = patientEmailValue;
+          
+          // Update email display in OTP step
+          const emailDisplay = document.querySelector('#otpStep p.font-medium');
+          if (emailDisplay) {
+            emailDisplay.textContent = patientEmailValue;
+          }
         } else {
           messageDiv.className = 'p-4 rounded-lg mb-4 bg-red-100 border border-red-400 text-red-700';
           let errorMsg = data.message || 'Failed to send OTP. Please try again.';
@@ -715,7 +538,6 @@
       }
     });
 
-    // Other patient registration handlers remain the same...
     document.getElementById('verifyOtpBtn')?.addEventListener('click', async function() {
       const otpInput = document.getElementById('otpInput');
       const otpCode = otpInput.value.trim();
@@ -751,6 +573,7 @@
           messageDiv.textContent = data.message;
           messageDiv.classList.remove('hidden');
           
+          // Redirect to patient page
           setTimeout(() => {
             window.location.href = data.redirectUrl || '/patientPage';
           }, 1500);
@@ -776,8 +599,10 @@
       const messageDiv = document.getElementById('patientMessage');
       const originalText = resendBtn.innerHTML;
       
+      // Clear OTP input
       document.getElementById('otpInput').value = '';
       
+      // Show loading state
       resendBtn.disabled = true;
       resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
       messageDiv.classList.add('hidden');
@@ -823,13 +648,8 @@
     });
 
     function GoogleAuth() {
-      window.location.href = "http://localhost:4040/patientPage/auth/google";
-    }
-
-    // Initialize the application
-    window.onload = function() {
-      loadGoogleMapsAPI();
-    };
+        window.location.href="http://localhost:4040/patientPage/auth/google"
+      }
   </script>
 </body>
 </html>
