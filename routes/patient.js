@@ -396,7 +396,7 @@ patientRouter.get('/displayDoctors', async (req, res) => {
         res.render('patient', {
             doctors: doctorsArray,
             patientName: res.locals.name,
-
+            // Hospital name is automatically included in each doctor object from the database
         });
     
 });

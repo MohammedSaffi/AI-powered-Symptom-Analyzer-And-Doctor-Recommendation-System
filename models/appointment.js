@@ -57,6 +57,10 @@ const appointmentSchema = new mongoose.Schema({
         type: String,
         default: null,
     },
+    hospitalName: {
+        type: String,
+        default: ''
+    },
     createdAt: {
         type: Date,
         default: Date.now,

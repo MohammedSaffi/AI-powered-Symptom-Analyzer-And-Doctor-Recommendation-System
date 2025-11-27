@@ -133,7 +133,7 @@ export const sendOTPEmail = async (email, otp) => {
   }
 };
 
-// Send Appointment Confirmation Email
+// Send Appointment Confirmation Email - UPDATED TO INCLUDE HOSPITAL NAME
 export const sendAppointmentConfirmationEmail = async (appointmentData, doctorDetails) => {
   try {
     // Validate configuration first
@@ -192,6 +192,7 @@ export const sendAppointmentConfirmationEmail = async (appointmentData, doctorDe
               <p style="color: #333333; margin: 8px 0;"><strong>Time Slot:</strong> ${timeSlot}</p>
               ${doctorDetails ? `<p style="color: #333333; margin: 8px 0;"><strong>Doctor:</strong> Dr. ${doctorDetails.name}</p>` : ''}
               ${doctorDetails && doctorDetails.specialization ? `<p style="color: #333333; margin: 8px 0;"><strong>Specialization:</strong> ${doctorDetails.specialization}</p>` : ''}
+              ${doctorDetails && doctorDetails.hospitalName ? `<p style="color: #333333; margin: 8px 0;"><strong>Hospital/Clinic:</strong> ${doctorDetails.hospitalName}</p>` : ''}
               ${confirmationMessage ? `<p style="color: #333333; margin: 8px 0;"><strong>Doctor's Note:</strong> ${confirmationMessage}</p>` : ''}
               ${description ? `<p style="color: #333333; margin: 8px 0;"><strong>Your Concern:</strong> ${description}</p>` : ''}
             </div>
@@ -222,7 +223,7 @@ export const sendAppointmentConfirmationEmail = async (appointmentData, doctorDe
           </div>
         </div>
       `,
-      // Text version for email clients that don't support HTML
+      // Text version for email clients that don't support HTML - UPDATED TO INCLUDE HOSPITAL NAME
       text: `
 Appointment Confirmed
 
@@ -234,6 +235,7 @@ Date: ${formattedDate}
 Time: ${timeSlot}
 ${doctorDetails ? `Doctor: Dr. ${doctorDetails.name}` : ''}
 ${doctorDetails && doctorDetails.specialization ? `Specialization: ${doctorDetails.specialization}` : ''}
+${doctorDetails && doctorDetails.hospitalName ? `Hospital/Clinic: ${doctorDetails.hospitalName}` : ''}
 ${confirmationMessage ? `Doctor's Note: ${confirmationMessage}` : ''}
 ${description ? `Your Concern: ${description}` : ''}
 

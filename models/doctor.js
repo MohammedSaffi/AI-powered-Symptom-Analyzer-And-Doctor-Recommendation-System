@@ -40,8 +40,12 @@ const doctorSchema = new mongoose.Schema({
   specialization: {
     type: String,
   },
-  location:{
-    type:String,
+  location: {
+    type: String,
+  },
+  hospitalName: {
+    type: String,
+    default: ''
   }
 });
 

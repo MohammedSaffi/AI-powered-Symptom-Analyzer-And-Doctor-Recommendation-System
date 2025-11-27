@@ -29,10 +29,10 @@ const isDoctorLoggedIn = (req, res, next) => {
   res.redirect("/doctorLogin");
 };
 
-// Doctor Registration
+// Doctor Registration - UPDATED TO INCLUDE HOSPITAL NAME
 doctorRouter.post("/register", async (req, res) => {
   try {
-    const { name, email, password, phone, gender, specialization, location } = req.body;
+    const { name, email, password, phone, gender, specialization, location, hospitalName } = req.body;
 
     // Check if doctor already exists
     const existingDoctor = await DoctorModel.findOne({ email });
@@ -50,7 +50,7 @@ doctorRouter.post("/register", async (req, res) => {
     // Generate unique doctor ID
     const doctorid = generateCode();
 
-    // Create doctor
+    // Create doctor - INCLUDING HOSPITAL NAME
     const newDoctor = await DoctorModel.create({
       name,
       email,
@@ -59,6 +59,7 @@ doctorRouter.post("/register", async (req, res) => {
       gender,
       specialization: specialization.toLowerCase(),
       location: location.toLowerCase(),
+      hospitalName: hospitalName || '', // Add hospital name field
       doctorid,
       status: "pending",
     });
@@ -170,15 +171,15 @@ doctorRouter.get("/profile", isDoctorLoggedIn, async (req, res) => {
   }
 });
 
-// Update Doctor Profile
+// Update Doctor Profile - UPDATED TO INCLUDE HOSPITAL NAME
 doctorRouter.post("/profile/update", isDoctorLoggedIn, async (req, res) => {
   try {
     const doctorId = req.session.doctorId;
-    const { name, phone, specialization, location } = req.body;
+    const { name, phone, specialization, location, hospitalName } = req.body;
 
     const updatedDoctor = await DoctorModel.findOneAndUpdate(
       { doctorid: doctorId },
-      { name, phone, specialization, location },
+      { name, phone, specialization, location, hospitalName }, // Include hospital name
       { new: true }
     ).select("-passwordHash");
 

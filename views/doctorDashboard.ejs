@@ -306,6 +306,12 @@
                             <input type="text" id="profileLocation" value="<%= doctor.location || '' %>" 
                                    class="input-field w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         </div>
+                        <!-- Hospital Name Field -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Hospital Name</label>
+                            <input type="text" id="profileHospitalName" value="<%= doctor.hospitalName || '' %>" 
+                                   class="input-field w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Doctor ID</label>
                             <input type="text" value="<%= doctor.doctorid %>" disabled
@@ -374,7 +380,7 @@
             modal.classList.toggle('hidden');
         }
 
-        // Profile Form Submission
+        // Profile Form Submission - UPDATED TO INCLUDE HOSPITAL NAME
         document.getElementById('profileForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const formData = {
@@ -382,6 +388,7 @@
                 phone: document.getElementById('profilePhone').value,
                 specialization: document.getElementById('profileSpecialization').value,
                 location: document.getElementById('profileLocation').value,
+                hospitalName: document.getElementById('profileHospitalName').value, // Added hospital name
             };
 
             try {
@@ -546,4 +553,4 @@
         }
     </script>
 </body>
-</html>
+</html>s
