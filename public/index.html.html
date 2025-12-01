@@ -1,1451 +1,1646 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MediCare Hospital Portal</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(145deg, #0f172a, #1e293b);
-      color: white;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.6;
-    }
-    
-    /* Header Styles */
-    header {
-      padding: 20px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-      background: rgba(15, 23, 42, 0.9);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-    
-    header h1 {
-      font-size: 1.6rem;
-      color: #38bdf8;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-left: 50px;
-    }
-    
-    header span {
-      font-size: 0.9rem;
-      color: #94a3b8;
-    }
-
-    /* Small Admin Button Style */
-    .admin-card {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      background: #111827;
-      border-radius: 8px;
-      padding: 8px;
-      width: 60px;
-      height: 70px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-      transition: transform 0.2s;
-      text-decoration: none;
-      color: white;
-      z-index: 10;
-    }
-    
-    .admin-card:hover {
-      transform: scale(1.05);
-      background: #1e293b;
-    }
-    
-    .admin-card img {
-      width: 30px;
-      height: 30px;
-      margin-bottom: 5px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: white;
-      padding: 3px;
-    }
-    
-    .admin-card strong {
-      font-size: 0.7rem;
-      text-align: center;
-    }
-
-    /* Main Container */
-    .container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 40px;
-      padding: 30px 20px;
-    }
-    
-    .hero-copy {
-      background: #111827;
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-      max-width: 750px;
-      text-align: left;
-    }
-    
-    .hero-copy h2 {
-      font-size: 1.9rem;
-      margin-bottom: 15px;
-      color: #38bdf8;
-    }
-    
-    .hero-copy p {
-      color: #cbd5e1;
-      line-height: 1.6;
-      margin-bottom: 10px;
-    }
-    
-    .hero-copy ul {
-      margin-top: 16px;
-      padding-left: 20px;
-      line-height: 1.8;
-      color: #cbd5e1;
-    }
-    
-    .hero-copy li {
-      margin-bottom: 8px;
-    }
-    
-    /* Button Styles */
-    .button-row {
-      display: flex;
-      gap: 30px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    
-    .card-btn {
-      background: #111827;
-      border-radius: 16px;
-      padding: 0;
-      width: 280px;
-      height: 320px;
-      display: flex;
-      flex-direction: column;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-      transition: transform 0.3s, box-shadow 0.3s;
-      text-decoration: none;
-      color: white;
-      overflow: hidden;
-      position: relative;
-    }
-    
-    .card-btn:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 25px rgba(0,0,0,0.6);
-    }
-    
-    .card-btn img {
-      width: 100%;
-      height: 220px;
-      object-fit: cover;
-      border-top-left-radius: 16px;
-      border-top-right-radius: 16px;
-    }
-    
-    .card-content {
-      padding: 20px;
-      text-align: center;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    
-    .card-btn strong {
-      font-size: 1.3rem;
-      display: block;
-      margin-bottom: 5px;
-    }
-    
-    .card-btn span {
-      font-size: 0.9rem;
-      color: #94a3b8;
-    }
-    
-    .doctor-btn {
-      border-top: 4px solid #3b82f6;
-    }
-    
-    .patient-btn {
-      border-top: 4px solid #10b981;
-    }
-    
-    .register-btn {
-      background: #0ea5e9;
-      padding: 15px 30px;
-      border-radius: 10px;
-      font-size: 1.2rem;
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      transition: background 0.3s, transform 0.2s;
-    }
-    
-    .register-btn:hover {
-      background: #0284c7;
-      transform: translateY(-2px);
-    }
-    
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 0.85rem;
-      color: #94a3b8;
-      margin-top: 40px;
-    }
-    
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 100;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.7);
-      backdrop-filter: blur(5px);
-      animation: fadeIn 0.3s;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    
-    .modal-content {
-      background: linear-gradient(145deg, #1e293b, #0f172a);
-      margin: 5% auto;
-      padding: 0;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 450px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-      animation: slideIn 0.3s;
-      overflow: hidden;
-      color: white;
-    }
-    
-    @keyframes slideIn {
-      from { transform: translateY(-50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    
-    .modal-header {
-      padding: 20px;
-      background: #111827;
-      border-bottom: 1px solid #334155;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .modal-header h2 {
-      color: #38bdf8;
-      font-size: 1.5rem;
-    }
-    
-    .close {
-      color: #94a3b8;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: color 0.3s;
-    }
-    
-    .close:hover {
-      color: white;
-    }
-    
-    .modal-body {
-      padding: 25px;
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      color: #cbd5e1;
-      font-weight: 500;
-    }
-    
-    .form-group input, .form-group select {
-      width: 100%;
-      padding: 12px 15px;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      background: #1e293b;
-      color: white;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-    }
-    
-    .form-group input:focus, .form-group select:focus {
-      outline: none;
-      border-color: #38bdf8;
-      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
-    }
-    
-    .login-btn {
-      width: 100%;
-      padding: 14px;
-      background: #0ea5e9;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    
-    .login-btn:hover {
-      background: #0284c7;
-    }
-    
-    .error-message {
-      color: #f87171;
-      margin-top: 15px;
-      text-align: center;
-      display: none;
-    }
-    
-    .success-message {
-      color: #4ade80;
-      margin-top: 15px;
-      text-align: center;
-      display: none;
-    }
-    
-    /* Registration Modal Styles */
-    .registration-modal .modal-content {
-      max-width: 800px;
-      height: 85vh;
-      overflow-y: auto;
-    }
-    
-    .registration-tabs {
-      display: flex;
-      background: #111827;
-      border-bottom: 1px solid #334155;
-    }
-    
-    .registration-tab {
-      flex: 1;
-      padding: 15px;
-      text-align: center;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    
-    .registration-tab.active {
-      background: #1e293b;
-      border-bottom: 3px solid #0ea5e9;
-    }
-    
-    .registration-form {
-      display: none;
-      padding: 20px;
-    }
-    
-    .registration-form.active {
-      display: block;
-    }
-    
-    .form-section {
-      margin-bottom: 25px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #334155;
-    }
-    
-    .form-section h3 {
-      color: #38bdf8;
-      margin-bottom: 15px;
-      font-size: 1.2rem;
-    }
-    
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-    
-    @media (max-width: 768px) {
-      .form-row {
-        grid-template-columns: 1fr;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediCare Hospital Portal</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-    }
-    
-    .map-container {
-      height: 250px;
-      margin-top: 15px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    
-    .file-upload {
-      border: 2px dashed #334155;
-      padding: 20px;
-      border-radius: 8px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.3s;
-      position: relative;
-      height: 150px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .file-upload:hover {
-      border-color: #38bdf8;
-    }
-    
-    .file-upload input {
-      display: none;
-    }
-    
-    .file-upload span {
-      z-index: 1;
-    }
-    
-    .file-preview {
-      display: none;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      position: absolute;
-      top: 0;
-      left: 0;
-      border-radius: 8px;
-    }
-    
-    .preview-container {
-      position: relative;
-      width: 100%;
-      margin-top: 10px;
-    }
-    
-    .submit-btn {
-      width: 100%;
-      padding: 14px;
-      background: #0ea5e9;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s;
-      margin-top: 20px;
-    }
-    
-    .submit-btn:hover {
-      background: #0284c7;
-    }
-    
-    /* Responsive Design */
-    @media screen and (max-width: 768px) {
-      header {
-        padding: 15px 20px;
+
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(145deg, #0f172a, #1e293b);
+        color: white;
+        min-height: 100vh;
+        display: flex;
         flex-direction: column;
-        gap: 10px;
+        line-height: 1.6;
       }
-      
+
+      /* Header Styles */
+      header {
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        background: rgba(15, 23, 42, 0.9);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
       header h1 {
-        margin-left: 0;
-        margin-top: 10px;
+        font-size: 1.6rem;
+        color: #38bdf8;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-left: 50px;
       }
-      
-      .button-row {
-        gap: 20px;
+
+      header span {
+        font-size: 0.9rem;
+        color: #94a3b8;
       }
-      
-      .card-btn {
-        width: 100%;
-        max-width: 300px;
+
+      /* Small Admin Button Style */
+      .admin-card {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: #111827;
+        border-radius: 8px;
+        padding: 8px;
+        width: 60px;
+        height: 70px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+        transition: transform 0.2s;
+        text-decoration: none;
+        color: white;
+        z-index: 10;
       }
-      
-      .modal-content {
-        width: 95%;
-        margin: 10% auto;
+
+      .admin-card:hover {
+        transform: scale(1.05);
+        background: #1e293b;
       }
-    }
-    
-    @media screen and (max-width: 480px) {
+
+      .admin-card img {
+        width: 30px;
+        height: 30px;
+        margin-bottom: 5px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: white;
+        padding: 3px;
+      }
+
+      .admin-card strong {
+        font-size: 0.7rem;
+        text-align: center;
+      }
+
+      /* Main Container */
+      .container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        padding: 30px 20px;
+      }
+
       .hero-copy {
+        background: #111827;
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+        max-width: 750px;
+        text-align: left;
+      }
+
+      .hero-copy h2 {
+        font-size: 1.9rem;
+        margin-bottom: 15px;
+        color: #38bdf8;
+      }
+
+      .hero-copy p {
+        color: #cbd5e1;
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+
+      .hero-copy ul {
+        margin-top: 16px;
+        padding-left: 20px;
+        line-height: 1.8;
+        color: #cbd5e1;
+      }
+
+      .hero-copy li {
+        margin-bottom: 8px;
+      }
+
+      /* Button Styles */
+      .button-row {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .card-btn {
+        background: #111827;
+        border-radius: 16px;
+        padding: 0;
+        width: 280px;
+        height: 320px;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+        text-decoration: none;
+        color: white;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .card-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6);
+      }
+
+      .card-btn img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+      }
+
+      .card-content {
+        padding: 20px;
+        text-align: center;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .card-btn strong {
+        font-size: 1.3rem;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .card-btn span {
+        font-size: 0.9rem;
+        color: #94a3b8;
+      }
+
+      .doctor-btn {
+        border-top: 4px solid #3b82f6;
+      }
+
+      .patient-btn {
+        border-top: 4px solid #10b981;
+      }
+
+      .register-btn {
+        background: #0ea5e9;
+        padding: 15px 30px;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transition:
+          background 0.3s,
+          transform 0.2s;
+      }
+
+      .register-btn:hover {
+        background: #0284c7;
+        transform: translateY(-2px);
+      }
+
+      footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 0.85rem;
+        color: #94a3b8;
+        margin-top: 40px;
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 100;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        animation: fadeIn 0.3s;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .modal-content {
+        background: linear-gradient(145deg, #1e293b, #0f172a);
+        margin: 5% auto;
+        padding: 0;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 450px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        animation: slideIn 0.3s;
+        overflow: hidden;
+        color: white;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        padding: 20px;
+        background: #111827;
+        border-bottom: 1px solid #334155;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-header h2 {
+        color: #38bdf8;
+        font-size: 1.5rem;
+      }
+
+      .close {
+        color: #94a3b8;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.3s;
+      }
+
+      .close:hover {
+        color: white;
+      }
+
+      .modal-body {
+        padding: 25px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #cbd5e1;
+        font-weight: 500;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        background: #1e293b;
+        color: white;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+      }
+
+      .login-btn {
+        width: 100%;
+        padding: 14px;
+        background: #0ea5e9;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .login-btn:hover {
+        background: #0284c7;
+      }
+
+      .error-message {
+        color: #f87171;
+        margin-top: 15px;
+        text-align: center;
+        display: none;
+      }
+
+      .success-message {
+        color: #4ade80;
+        margin-top: 15px;
+        text-align: center;
+        display: none;
+      }
+
+      /* Registration Modal Styles */
+      .registration-modal .modal-content {
+        max-width: 800px;
+        height: 85vh;
+        overflow-y: auto;
+      }
+
+      .registration-tabs {
+        display: flex;
+        background: #111827;
+        border-bottom: 1px solid #334155;
+      }
+
+      .registration-tab {
+        flex: 1;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .registration-tab.active {
+        background: #1e293b;
+        border-bottom: 3px solid #0ea5e9;
+      }
+
+      .registration-form {
+        display: none;
         padding: 20px;
       }
-      
-      .hero-copy h2 {
-        font-size: 1.6rem;
-      }
-      
-      .card-btn {
-        height: 280px;
-      }
-      
-      .card-btn img {
-        height: 180px;
-      }
-    }
-  </style>
-</head>
-<body>
 
-<header>
-  <!-- Small Admin Login Card -->
-  <a href="#" class="admin-card" id="adminLoginBtn">
-    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzM4YmRmOCIgd2lkdGg=" alt="Admin">
-    <strong>Admin</strong>
-  </a>
-  
-  <h1>🏥 MediCare Hospital</h1>
-  <span>24×7 Care • ISO 9001:2015</span>
-</header>
+      .registration-form.active {
+        display: block;
+      }
 
-<div class="container">
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-copy">
-      <h2>Welcome to MediCare – Your Health, Our Priority</h2>
-      <p>Register as a <strong>Doctor</strong> or <strong>Patient</strong> to access appointments, records, and secure messaging. Doctors get a dedicated dashboard for schedules and consultations.</p>
-      <ul>
-        <li>Patients can book appointments and view prescriptions.</li>
-        <li>Doctors can manage availability, specialties, and patient notes.</li>
-        <li>Admin approves doctors before profiles go live.</li>
-        <li>All site updates & data changes require admin permission.</li>
-      </ul>
-    </div>
-  </section>
+      .form-section {
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #334155;
+      }
 
-  <!-- Login Buttons -->
-  <div class="button-row">
-    <a href="#" class="card-btn doctor-btn" id="doctorLoginBtn">
-      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAw0LTE0NGMwLTQuNC0zLjYtOC04LThIMTY0Yy00LjQgMC04IDMuNi04IDh2MjY0YzAgNC40IDMuNiA4IDggOHptMTU2LTIwOGg0MHY0MGgtNDB2LTQwem0wIDgwaDQwdjQwaC00MHYtNDB6bTAgODBoNDB2NDBoLTQwdi00MHptLTgwLTgwaDQwdjQwaC00MHYtNDB6bTAgODBoNDB2NDBoLTQwdi00MHptLTgwLTgwaDQwdjQwaC00MHYtNDB6bTAgODBoNDB2NDBoLTQwdi00MHoiLz48L3N2Zz4=" alt="Doctor">
-      <div class="card-content">
-        <strong>Doctor Login</strong>
-        <span>Access your medical dashboard</span>
+      .form-section h3 {
+        color: #38bdf8;
+        margin-bottom: 15px;
+        font-size: 1.2rem;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+
+      @media (max-width: 768px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .map-container {
+        height: 250px;
+        margin-top: 15px;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .file-upload {
+        border: 2px dashed #334155;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.3s;
+        position: relative;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .file-upload:hover {
+        border-color: #38bdf8;
+      }
+
+      .file-upload input {
+        display: none;
+      }
+
+      .file-upload span {
+        z-index: 1;
+      }
+
+      .file-preview {
+        display: none;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-radius: 8px;
+      }
+
+      .preview-container {
+        position: relative;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 14px;
+        background: #0ea5e9;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin-top: 20px;
+      }
+
+      .submit-btn:hover {
+        background: #0284c7;
+      }
+
+      /* Responsive Design */
+      @media screen and (max-width: 768px) {
+        header {
+          padding: 15px 20px;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        header h1 {
+          margin-left: 0;
+          margin-top: 10px;
+        }
+
+        .button-row {
+          gap: 20px;
+        }
+
+        .card-btn {
+          width: 100%;
+          max-width: 300px;
+        }
+
+        .modal-content {
+          width: 95%;
+          margin: 10% auto;
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        .hero-copy {
+          padding: 20px;
+        }
+
+        .hero-copy h2 {
+          font-size: 1.6rem;
+        }
+
+        .card-btn {
+          height: 280px;
+        }
+
+        .card-btn img {
+          height: 180px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <!-- Small Admin Login Card -->
+      <a href="#" class="admin-card" id="adminLoginBtn">
+        <img
+          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzM4YmRmOCIgd2lkdGg="
+          alt="Admin"
+        />
+        <strong>Admin</strong>
+      </a>
+
+      <h1>🏥 MediCare Hospital</h1>
+      <span>24×7 Care • ISO 9001:2015</span>
+    </header>
+
+    <div class="container">
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-copy">
+          <h2>Welcome to MediCare – Your Health, Our Priority</h2>
+          <p>
+            Register as a <strong>Doctor</strong> or <strong>Patient</strong> to
+            access appointments, records, and secure messaging. Doctors get a
+            dedicated dashboard for schedules and consultations.
+          </p>
+          <ul>
+            <li>Patients can book appointments and view prescriptions.</li>
+            <li>
+              Doctors can manage availability, specialties, and patient notes.
+            </li>
+            <li>Admin approves doctors before profiles go live.</li>
+            <li>All site updates & data changes require admin permission.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Login Buttons -->
+      <div class="button-row">
+        <a href="#" class="card-btn doctor-btn" id="doctorLoginBtn">
+          <img
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAw0LTE0NGMwLTQuNC0zLjYtOC04LThIMTY0Yy00LjQgMC04IDMuNi04IDh2MjY0YzAgNC40IDMuNiA4IDggOHptMTU2LTIwOGg0MHY0MGgtNDB2LTQwem0wIDgwaDQwdjQwaC00MHYtNDB6bTAgODBoNDB2NDBoLTQwdi00MHptLTgwLTgwaDQwdjQwaC00MHYtNDB6bTAgODBoNDB2NDBoLTQwdi00MHptLTgwLTgwaDQwdjQwaC00MHYtNDB6bTAgODBoNDB2NDBoLTQwdi00MHoiLz48L3N2Zz4="
+            alt="Doctor"
+          />
+          <div class="card-content">
+            <strong>Doctor Login</strong>
+            <span>Access your medical dashboard</span>
+          </div>
+        </a>
+        <a href="#" class="card-btn patient-btn" id="patientLoginBtn">
+          <img
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSIjMTBiOTgxIj48cGF0aCBkPSJNNDQ4IDI1NkM0NDggMTE0LjYgMzQxLjQgMCAyNTYgMFM2NCAxMTQuNiA2NCAyNTZzMTA2LjYgMjU2IDE5MiAyNTYgMTkyLTExNC42IDE5Mi0yNTZ6TTI1NiAzMmM0Mi4yIDAgODAgMTcuOSAxMDcuNCA0Ni42YTIyMC4zIDIyMC4zIDAgMCAxLTIxNC44IDAgQzE3NiAxNDkuOSAyMTMuOCAxMzIgMjU2IDEzMnptMCA0NDhjLTUwLjIgMC05Ni42LTE2LjgtMTM0LjQtNDQuOCA0MC4zLTQzLjMgMTA0LjYtNzUuMiAxMzQuNC03NS4yczk0LjEgMzEuOSAxMzQuNCA3NS4yQzM1Mi42IDQ2My4yIDMwNi4yIDQ4MCAyNTYgNDgweiIvPjwvc3ZnPg=="
+            alt="Patient"
+          />
+          <div class="card-content">
+            <strong>Patient Login</strong>
+            <span>Manage your health records</span>
+          </div>
+        </a>
       </div>
-    </a>
-    <a href="#" class="card-btn patient-btn" id="patientLoginBtn">
-      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSIjMTBiOTgxIj48cGF0aCBkPSJNNDQ4IDI1NkM0NDggMTE0LjYgMzQxLjQgMCAyNTYgMFM2NCAxMTQuNiA2NCAyNTZzMTA2LjYgMjU2IDE5MiAyNTYgMTkyLTExNC42IDE5Mi0yNTZ6TTI1NiAzMmM0Mi4yIDAgODAgMTcuOSAxMDcuNCA0Ni42YTIyMC4zIDIyMC4zIDAgMCAxLTIxNC44IDAgQzE3NiAxNDkuOSAyMTMuOCAxMzIgMjU2IDEzMnptMCA0NDhjLTUwLjIgMC05Ni42LTE2LjgtMTM0LjQtNDQuOCA0MC4zLTQzLjMgMTA0LjYtNzUuMiAxMzQuNC03NS4yczk0LjEgMzEuOSAxMzQuNCA3NS4yQzM1Mi42IDQ2My4yIDMwNi4yIDQ4MCAyNTYgNDgweiIvPjwvc3ZnPg==" alt="Patient">
-      <div class="card-content">
-        <strong>Patient Login</strong>
-        <span>Manage your health records</span>
+
+      <!-- Register Button -->
+      <a href="#" class="register-btn" id="registerBtn"
+        >New User? Register Here</a
+      >
+    </div>
+
+    <footer>
+      © 2025 MediCare Hospital • For demo only – connect forms to your backend
+      APIs.
+    </footer>
+
+    <!-- Admin Login Modal -->
+    <div id="adminModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Admin Login</h2>
+          <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+          <form id="adminLoginForm">
+            <div class="form-group">
+              <label for="adminUsername">Username</label>
+              <input
+                type="text"
+                id="adminUsername"
+                placeholder="Enter admin username"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="adminPassword">Password</label>
+              <input
+                type="password"
+                id="adminPassword"
+                placeholder="Enter admin password"
+                required
+              />
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+          </form>
+          <div id="adminError" class="error-message">
+            Invalid credentials. Please try again.
+          </div>
+          <div id="adminSuccess" class="success-message">
+            Login successful! Redirecting...
+          </div>
+        </div>
       </div>
-    </a>
-  </div>
+    </div>
 
-  <!-- Register Button -->
-  <a href="#" class="register-btn" id="registerBtn">New User? Register Here</a>
-</div>
+    <!-- Doctor Login Modal -->
+    <div id="doctorModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Doctor Login</h2>
+          <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+          <form id="doctorLoginForm">
+            <div class="form-group">
+              <label for="doctorUsername">Username</label>
+              <input
+                type="text"
+                id="doctorUsername"
+                placeholder="Enter doctor username"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="doctorPassword">Password</label>
+              <input
+                type="password"
+                id="doctorPassword"
+                placeholder="Enter doctor password"
+                required
+              />
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+          </form>
+          <div id="doctorError" class="error-message">
+            Invalid credentials. Please try again.
+          </div>
+          <div id="doctorSuccess" class="success-message">
+            Login successful! Redirecting...
+          </div>
+        </div>
+      </div>
+    </div>
 
-<footer>
-  © 2025 MediCare Hospital • For demo only – connect forms to your backend APIs.
-</footer>
+    <!-- Patient Login Modal -->
+    <div id="patientModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Patient Login</h2>
+          <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+          <form id="patientLoginForm">
+            <div class="form-group">
+              <label for="patientUsername">Username</label>
+              <input
+                type="text"
+                id="patientUsername"
+                placeholder="Enter patient username"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="patientPassword">Password</label>
+              <input
+                type="password"
+                id="patientPassword"
+                placeholder="Enter patient password"
+                required
+              />
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+          </form>
+          <div id="patientError" class="error-message">
+            Invalid credentials. Please try again.
+          </div>
+          <div id="patientSuccess" class="success-message">
+            Login successful! Redirecting...
+          </div>
+        </div>
+      </div>
+    </div>
 
-<!-- Admin Login Modal -->
-<div id="adminModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Admin Login</h2>
-      <span class="close">&times;</span>
-    </div>
-    <div class="modal-body">
-      <form id="adminLoginForm">
-        <div class="form-group">
-          <label for="adminUsername">Username</label>
-          <input type="text" id="adminUsername" placeholder="Enter admin username" required>
+    <!-- Registration Modal -->
+    <div id="registrationModal" class="modal registration-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Create New Account</h2>
+          <span class="close">&times;</span>
         </div>
-        <div class="form-group">
-          <label for="adminPassword">Password</label>
-          <input type="password" id="adminPassword" placeholder="Enter admin password" required>
-        </div>
-        <button type="submit" class="login-btn">Login</button>
-      </form>
-      <div id="adminError" class="error-message">Invalid credentials. Please try again.</div>
-      <div id="adminSuccess" class="success-message">Login successful! Redirecting...</div>
-    </div>
-  </div>
-</div>
 
-<!-- Doctor Login Modal -->
-<div id="doctorModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Doctor Login</h2>
-      <span class="close">&times;</span>
-    </div>
-    <div class="modal-body">
-      <form id="doctorLoginForm">
-        <div class="form-group">
-          <label for="doctorUsername">Username</label>
-          <input type="text" id="doctorUsername" placeholder="Enter doctor username" required>
+        <div class="registration-tabs">
+          <div class="registration-tab active" data-tab="doctor">
+            Doctor Registration
+          </div>
+          <div class="registration-tab" data-tab="patient">
+            Patient Registration
+          </div>
         </div>
-        <div class="form-group">
-          <label for="doctorPassword">Password</label>
-          <input type="password" id="doctorPassword" placeholder="Enter doctor password" required>
-        </div>
-        <button type="submit" class="login-btn">Login</button>
-      </form>
-      <div id="doctorError" class="error-message">Invalid credentials. Please try again.</div>
-      <div id="doctorSuccess" class="success-message">Login successful! Redirecting...</div>
-    </div>
-  </div>
-</div>
 
-<!-- Patient Login Modal -->
-<div id="patientModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Patient Login</h2>
-      <span class="close">&times;</span>
-    </div>
-    <div class="modal-body">
-      <form id="patientLoginForm">
-        <div class="form-group">
-          <label for="patientUsername">Username</label>
-          <input type="text" id="patientUsername" placeholder="Enter patient username" required>
-        </div>
-        <div class="form-group">
-          <label for="patientPassword">Password</label>
-          <input type="password" id="patientPassword" placeholder="Enter patient password" required>
-        </div>
-        <button type="submit" class="login-btn">Login</button>
-      </form>
-      <div id="patientError" class="error-message">Invalid credentials. Please try again.</div>
-      <div id="patientSuccess" class="success-message">Login successful! Redirecting...</div>
-    </div>
-  </div>
-</div>
+        <!-- Doctor Registration Form -->
+        <form id="doctorRegistrationForm" class="registration-form active">
+          <div class="modal-body">
+            <div class="form-section">
+              <h3>Personal Information</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="doctorFullName">Full Name*</label>
+                  <input
+                    type="text"
+                    id="doctorFullName"
+                    placeholder="Dr. John Smith"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="doctorEmail">Email*</label>
+                  <input
+                    type="email"
+                    id="doctorEmail"
+                    placeholder="doctor@example.com"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="doctorPhone">Phone*</label>
+                  <input
+                    type="tel"
+                    id="doctorPhone"
+                    placeholder="+1 234 567 8900"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="doctorGender">Gender</label>
+                  <select id="doctorGender">
+                    <option value="">Select Gender</option>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                    <option value="OTHER">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="doctorDob">Date of Birth*</label>
+                  <input type="date" id="doctorDob" required max="2007-12-31" />
+                </div>
+                <div class="form-group">
+                  <label for="doctorAge">Age</label>
+                  <input type="number" id="doctorAge" readonly />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="doctorRegPassword">Password*</label>
+                  <input type="password" id="doctorRegPassword" required />
+                </div>
+                <div class="form-group">
+                  <label for="doctorConfirmPassword">Confirm Password*</label>
+                  <input type="password" id="doctorConfirmPassword" required />
+                </div>
+              </div>
+            </div>
 
-<!-- Registration Modal -->
-<div id="registrationModal" class="modal registration-modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Create New Account</h2>
-      <span class="close">&times;</span>
-    </div>
-    
-    <div class="registration-tabs">
-      <div class="registration-tab active" data-tab="doctor">Doctor Registration</div>
-      <div class="registration-tab" data-tab="patient">Patient Registration</div>
-    </div>
-    
-    <!-- Doctor Registration Form -->
-    <form id="doctorRegistrationForm" class="registration-form active">
-      <div class="modal-body">
-        <div class="form-section">
-          <h3>Personal Information</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="doctorFullName">Full Name*</label>
-              <input type="text" id="doctorFullName" placeholder="Dr. John Smith" required>
+            <div class="form-section">
+              <h3>Professional Information</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="doctorSpecialization">Specialization*</label>
+                  <select id="doctorSpecialization" required>
+                    <option value="">Select Specialization</option>
+                    <option value="cardiology">Cardiology</option>
+                    <option value="neurology">Neurology</option>
+                    <option value="pediatrics">Pediatrics</option>
+                    <option value="orthopedics">Orthopedics</option>
+                    <option value="dermatology">Dermatology</option>
+                    <option value="oncology">Oncology</option>
+                    <option value="gynecology">Gynecology</option>
+                    <option value="psychiatry">Psychiatry</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="doctorExperience">Years of Experience*</label>
+                  <input
+                    type="number"
+                    id="doctorExperience"
+                    min="0"
+                    max="50"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="doctorQualifications">Qualifications*</label>
+                  <input
+                    type="text"
+                    id="doctorQualifications"
+                    placeholder="MD, MBBS, etc."
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="doctorLicense">Medical License No.*</label>
+                  <input type="text" id="doctorLicense" required />
+                </div>
+              </div>
             </div>
-            <div class="form-group">
-              <label for="doctorEmail">Email*</label>
-              <input type="email" id="doctorEmail" placeholder="doctor@example.com" required>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="doctorPhone">Phone*</label>
-              <input type="tel" id="doctorPhone" placeholder="+1 234 567 8900" required>
-            </div>
-            <div class="form-group">
-              <label for="doctorGender">Gender</label>
-              <select id="doctorGender">
-                <option value="">Select Gender</option>
-                <option value="MALE">Male</option>
-                <option value="FEMALE">Female</option>
-                <option value="OTHER">Other</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="doctorDob">Date of Birth*</label>
-              <input type="date" id="doctorDob" required max="2007-12-31">
-            </div>
-            <div class="form-group">
-              <label for="doctorAge">Age</label>
-              <input type="number" id="doctorAge" readonly>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="doctorRegPassword">Password*</label>
-              <input type="password" id="doctorRegPassword" required>
-            </div>
-            <div class="form-group">
-              <label for="doctorConfirmPassword">Confirm Password*</label>
-              <input type="password" id="doctorConfirmPassword" required>
-            </div>
-          </div>
-        </div>
-        
-        <div class="form-section">
-          <h3>Professional Information</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="doctorSpecialization">Specialization*</label>
-              <select id="doctorSpecialization" required>
-                <option value="">Select Specialization</option>
-                <option value="cardiology">Cardiology</option>
-                <option value="neurology">Neurology</option>
-                <option value="pediatrics">Pediatrics</option>
-                <option value="orthopedics">Orthopedics</option>
-                <option value="dermatology">Dermatology</option>
-                <option value="oncology">Oncology</option>
-                <option value="gynecology">Gynecology</option>
-                <option value="psychiatry">Psychiatry</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="doctorExperience">Years of Experience*</label>
-              <input type="number" id="doctorExperience" min="0" max="50" required>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="doctorQualifications">Qualifications*</label>
-              <input type="text" id="doctorQualifications" placeholder="MD, MBBS, etc." required>
-            </div>
-            <div class="form-group">
-              <label for="doctorLicense">Medical License No.*</label>
-              <input type="text" id="doctorLicense" required>
-            </div>
-          </div>
-        </div>
-        
-        <div class="form-section">
-          <h3>Hospital Information</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="hospitalName">Hospital Name*</label>
-              <input type="text" id="hospitalName" required>
-            </div>
-            <div class="form-group">
-              <label for="hospitalAddress">Hospital Address*</label>
-              <input type="text" id="hospitalAddress" required>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="hospitalPhone">Hospital Phone</label>
-              <input type="tel" id="hospitalPhone">
-            </div>
-            <div class="form-group">
-              <label for="hospitalEmail">Hospital Email</label>
-              <input type="email" id="hospitalEmail">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Hospital Location*</label>
-            <div class="map-container" id="hospitalMap"></div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="hospitalLat">Latitude</label>
-                <input type="text" id="hospitalLat" readonly>
+
+            <div class="form-section">
+              <h3>Hospital Information</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="hospitalName">Hospital Name*</label>
+                  <input type="text" id="hospitalName" required />
+                </div>
+                <div class="form-group">
+                  <label for="hospitalAddress">Hospital Address*</label>
+                  <input type="text" id="hospitalAddress" required />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="hospitalPhone">Hospital Phone</label>
+                  <input type="tel" id="hospitalPhone" />
+                </div>
+                <div class="form-group">
+                  <label for="hospitalEmail">Hospital Email</label>
+                  <input type="email" id="hospitalEmail" />
+                </div>
               </div>
               <div class="form-group">
-                <label for="hospitalLng">Longitude</label>
-                <input type="text" id="hospitalLng" readonly>
+                <label>Hospital Location*</label>
+                <div class="map-container" id="hospitalMap"></div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="hospitalLat">Latitude</label>
+                    <input type="text" id="hospitalLat" readonly />
+                  </div>
+                  <div class="form-group">
+                    <label for="hospitalLng">Longitude</label>
+                    <input type="text" id="hospitalLng" readonly />
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Doctor Photo</label>
+                  <div class="file-upload" id="doctorPhotoUpload">
+                    <span>Click to upload doctor photo</span>
+                    <img
+                      class="file-preview"
+                      id="doctorPhotoPreview"
+                      src=""
+                      alt="Doctor Photo Preview"
+                    />
+                    <input type="file" id="doctorPhoto" accept="image/*" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Hospital Photo</label>
+                  <div class="file-upload" id="hospitalPhotoUpload">
+                    <span>Click to upload hospital photo</span>
+                    <img
+                      class="file-preview"
+                      id="hospitalPhotoPreview"
+                      src=""
+                      alt="Hospital Photo Preview"
+                    />
+                    <input type="file" id="hospitalPhoto" accept="image/*" />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Doctor Photo</label>
-              <div class="file-upload" id="doctorPhotoUpload">
-                <span>Click to upload doctor photo</span>
-                <img class="file-preview" id="doctorPhotoPreview" src="" alt="Doctor Photo Preview">
-                <input type="file" id="doctorPhoto" accept="image/*">
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Hospital Photo</label>
-              <div class="file-upload" id="hospitalPhotoUpload">
-                <span>Click to upload hospital photo</span>
-                <img class="file-preview" id="hospitalPhotoPreview" src="" alt="Hospital Photo Preview">
-                <input type="file" id="hospitalPhoto" accept="image/*">
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <button type="submit" class="submit-btn">Register as Doctor</button>
-      </div>
-    </form>
-    
-    <!-- Patient Registration Form -->
-    <form id="patientRegistrationForm" class="registration-form">
-      <div class="modal-body">
-        <div class="form-section">
-          <h3>Personal Information</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="patientFullName">Full Name*</label>
-              <input type="text" id="patientFullName" placeholder="John Smith" required>
-            </div>
-            <div class="form-group">
-              <label for="patientEmail">Email*</label>
-              <input type="email" id="patientEmail" placeholder="patient@example.com" required>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="patientPhone">Phone*</label>
-              <input type="tel" id="patientPhone" placeholder="+1 234 567 8900" required>
-            </div>
-            <div class="form-group">
-              <label for="patientGender">Gender*</label>
-              <select id="patientGender" required>
-                <option value="">Select Gender</option>
-                <option value="MALE">Male</option>
-                <option value="FEMALE">Female</option>
-                <option value="OTHER">Other</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label for="patientDob">Date of Birth*</label>
-              <input type="date" id="patientDob" required>
-            </div>
-            <div class="form-group">
-              <label for="patientAge">Age</label>
-              <input type="number" id="patientAge" readonly>
-            </div>
-            <div class="form-group">
-              <label for="patientBloodGroup">Blood Group</label>
-              <select id="patientBloodGroup">
-                <option value="">Select Blood Group</option>
-                <option value="A_POSITIVE">A+</option>
-                <option value="A_NEGATIVE">A-</option>
-                <option value="B_POSITIVE">B+</option>
-                <option value="B_NEGATIVE">B-</option>
-                <option value="AB_POSITIVE">AB+</option>
-                <option value="AB_NEGATIVE">AB-</option>
-                <option value="O_POSITIVE">O+</option>
-                <option value="O_NEGATIVE">O-</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="patientRegPassword">Password*</label>
-              <input type="password" id="patientRegPassword" required>
-            </div>
-            <div class="form-group">
-              <label for="patientConfirmPassword">Confirm Password*</label>
-              <input type="password" id="patientConfirmPassword" required>
-            </div>
-          </div>
-        </div>
-        
-        <div class="form-section">
-          <h3>Medical Information</h3>
-          <div class="form-group">
-            <label for="patientAllergies">Allergies</label>
-            <input type="text" id="patientAllergies" placeholder="List any allergies">
-          </div>
-          <div class="form-group">
-            <label for="patientConditions">Existing Medical Conditions</label>
-            <input type="text" id="patientConditions" placeholder="List any medical conditions">
-          </div>
-          <div class="form-group">
-            <label for="patientMedications">Current Medications</label>
-            <input type="text" id="patientMedications" placeholder="List current medications">
-          </div>
-        </div>
-        
-        <div class="form-section">
-          <h3>Emergency Contact</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="emergencyName">Emergency Contact Name*</label>
-              <input type="text" id="emergencyName" required>
-            </div>
-            <div class="form-group">
-              <label for="emergenceRelationship">Relationship*</label>
-              <input type="text" id="emergenceRelationship" required>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="emergencePhone">Emergency Contact Phone*</label>
-              <input type="tel" id="emergencePhone" required>
-            </div>
-            <div class="form-group">
-              <label for="emergenceEmail">Emergency Contact Email</label>
-              <input type="email" id="emergenceEmail">
-            </div>
-          </div>
-        </div>
-        
-        <button type="submit" class="submit-btn">Register as Patient</button>
-      </div>
-    </form>
-  </div>
-</div>
 
-<script>
-  // Change from localhost:8080 to your backend URL
-  const API_BASE = 'http://localhost:8080';
+            <button type="submit" class="submit-btn">Register as Doctor</button>
+          </div>
+        </form>
 
-  // DOM Elements
-  const adminLoginBtn = document.getElementById('adminLoginBtn');
-  const doctorLoginBtn = document.getElementById('doctorLoginBtn');
-  const patientLoginBtn = document.getElementById('patientLoginBtn');
-  const registerBtn = document.getElementById('registerBtn');
-  
-  const adminModal = document.getElementById('adminModal');
-  const doctorModal = document.getElementById('doctorModal');
-  const patientModal = document.getElementById('patientModal');
-  const registrationModal = document.getElementById('registrationModal');
-  
-  const closeButtons = document.querySelectorAll('.close');
-  
-  const adminLoginForm = document.getElementById('adminLoginForm');
-  const doctorLoginForm = document.getElementById('doctorLoginForm');
-  const patientLoginForm = document.getElementById('patientLoginForm');
-  const doctorRegistrationForm = document.getElementById('doctorRegistrationForm');
-  const patientRegistrationForm = document.getElementById('patientRegistrationForm');
-  
-  const adminError = document.getElementById('adminError');
-  const doctorError = document.getElementById('doctorError');
-  const patientError = document.getElementById('patientError');
-  
-  const adminSuccess = document.getElementById('adminSuccess');
-  const doctorSuccess = document.getElementById('doctorSuccess');
-  const patientSuccess = document.getElementById('patientSuccess');
-  
-  const registrationTabs = document.querySelectorAll('.registration-tab');
-  const registrationForms = document.querySelectorAll('.registration-form');
-  
-  // File upload elements
-  const doctorPhotoInput = document.getElementById('doctorPhoto');
-  const hospitalPhotoInput = document.getElementById('hospitalPhoto');
-  const doctorPhotoPreview = document.getElementById('doctorPhotoPreview');
-  const hospitalPhotoPreview = document.getElementById('hospitalPhotoPreview');
-  const doctorPhotoUpload = document.getElementById('doctorPhotoUpload');
-  const hospitalPhotoUpload = document.getElementById('hospitalPhotoUpload');
-  
-  // Google Maps variables
-  let map;
-  let marker;
-  
-  // Event Listeners
-  adminLoginBtn.addEventListener('click', () => openModal(adminModal));
-  doctorLoginBtn.addEventListener('click', () => openModal(doctorModal));
-  patientLoginBtn.addEventListener('click', () => openModal(patientModal));
-  registerBtn.addEventListener('click', () => openModal(registrationModal));
-  
-  closeButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      closeModals();
-      clearForms();
-    });
-  });
-  
-  window.addEventListener('click', (event) => {
-    if (event.target.classList.contains('modal')) {
-      closeModals();
-      clearForms();
-    }
-  });
-  
-  adminLoginForm.addEventListener('submit', (e) => handleLogin(e, 'admin'));
-  doctorLoginForm.addEventListener('submit', (e) => handleLogin(e, 'doctor'));
-  patientLoginForm.addEventListener('submit', (e) => handleLogin(e, 'patient'));
-  
-  doctorRegistrationForm.addEventListener('submit', handleDoctorRegistration);
-  patientRegistrationForm.addEventListener('submit', handlePatientRegistration);
-  
-  registrationTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const tabName = tab.getAttribute('data-tab');
-      switchRegistrationTab(tabName);
-    });
-  });
-  
-  // File upload handlers
-  doctorPhotoUpload.addEventListener('click', () => {
-    doctorPhotoInput.click();
-  });
-  
-  hospitalPhotoUpload.addEventListener('click', () => {
-    hospitalPhotoInput.click();
-  });
-  
-  doctorPhotoInput.addEventListener('change', (event) => {
-    handleImageUpload(event, doctorPhotoPreview, doctorPhotoUpload);
-  });
-  
-  hospitalPhotoInput.addEventListener('change', (event) => {
-    handleImageUpload(event, hospitalPhotoPreview, hospitalPhotoUpload);
-  });
-  
-  // Functions
-  function openModal(modal) {
-    closeModals();
-    modal.style.display = 'block';
-    
-    // Initialize map if registration modal is opened
-    if (modal === registrationModal) {
-      setTimeout(initMap, 100);
-    }
-  }
-  
-  function closeModals() {
-    adminModal.style.display = 'none';
-    doctorModal.style.display = 'none';
-    patientModal.style.display = 'none';
-    registrationModal.style.display = 'none';
-    
-    // Hide error messages
-    adminError.style.display = 'none';
-    doctorError.style.display = 'none';
-    patientError.style.display = 'none';
-    
-    adminSuccess.style.display = 'none';
-    doctorSuccess.style.display = 'none';
-    patientSuccess.style.display = 'none';
-  }
-  
-  function clearForms() {
-    adminLoginForm.reset();
-    doctorLoginForm.reset();
-    patientLoginForm.reset();
-    doctorRegistrationForm.reset();
-    patientRegistrationForm.reset();
-    
-    // Clear image previews
-    doctorPhotoPreview.style.display = 'none';
-    hospitalPhotoPreview.style.display = 'none';
-    doctorPhotoUpload.querySelector('span').style.display = 'block';
-    hospitalPhotoUpload.querySelector('span').style.display = 'block';
-  }
-  
-  function switchRegistrationTab(tabName) {
-    registrationTabs.forEach(tab => {
-      if (tab.getAttribute('data-tab') === tabName) {
-        tab.classList.add('active');
-      } else {
-        tab.classList.remove('active');
+        <!-- Patient Registration Form -->
+        <form id="patientRegistrationForm" class="registration-form">
+          <div class="modal-body">
+            <div class="form-section">
+              <h3>Personal Information</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="patientFullName">Full Name*</label>
+                  <input
+                    type="text"
+                    id="patientFullName"
+                    placeholder="John Smith"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="patientEmail">Email*</label>
+                  <input
+                    type="email"
+                    id="patientEmail"
+                    placeholder="patient@example.com"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="patientPhone">Phone*</label>
+                  <input
+                    type="tel"
+                    id="patientPhone"
+                    placeholder="+1 234 567 8900"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="patientGender">Gender*</label>
+                  <select id="patientGender" required>
+                    <option value="">Select Gender</option>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                    <option value="OTHER">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="patientDob">Date of Birth*</label>
+                  <input type="date" id="patientDob" required />
+                </div>
+                <div class="form-group">
+                  <label for="patientAge">Age</label>
+                  <input type="number" id="patientAge" readonly />
+                </div>
+                <div class="form-group">
+                  <label for="patientBloodGroup">Blood Group</label>
+                  <select id="patientBloodGroup">
+                    <option value="">Select Blood Group</option>
+                    <option value="A_POSITIVE">A+</option>
+                    <option value="A_NEGATIVE">A-</option>
+                    <option value="B_POSITIVE">B+</option>
+                    <option value="B_NEGATIVE">B-</option>
+                    <option value="AB_POSITIVE">AB+</option>
+                    <option value="AB_NEGATIVE">AB-</option>
+                    <option value="O_POSITIVE">O+</option>
+                    <option value="O_NEGATIVE">O-</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="patientRegPassword">Password*</label>
+                  <input type="password" id="patientRegPassword" required />
+                </div>
+                <div class="form-group">
+                  <label for="patientConfirmPassword">Confirm Password*</label>
+                  <input type="password" id="patientConfirmPassword" required />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Medical Information</h3>
+              <div class="form-group">
+                <label for="patientAllergies">Allergies</label>
+                <input
+                  type="text"
+                  id="patientAllergies"
+                  placeholder="List any allergies"
+                />
+              </div>
+              <div class="form-group">
+                <label for="patientConditions"
+                  >Existing Medical Conditions</label
+                >
+                <input
+                  type="text"
+                  id="patientConditions"
+                  placeholder="List any medical conditions"
+                />
+              </div>
+              <div class="form-group">
+                <label for="patientMedications">Current Medications</label>
+                <input
+                  type="text"
+                  id="patientMedications"
+                  placeholder="List current medications"
+                />
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Emergency Contact</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="emergencyName">Emergency Contact Name*</label>
+                  <input type="text" id="emergencyName" required />
+                </div>
+                <div class="form-group">
+                  <label for="emergenceRelationship">Relationship*</label>
+                  <input type="text" id="emergenceRelationship" required />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="emergencePhone">Emergency Contact Phone*</label>
+                  <input type="tel" id="emergencePhone" required />
+                </div>
+                <div class="form-group">
+                  <label for="emergenceEmail">Emergency Contact Email</label>
+                  <input type="email" id="emergenceEmail" />
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+              Register as Patient
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Change from localhost:8080 to your backend URL
+      const API_BASE = "http://localhost:8080";
+
+      // DOM Elements
+      const adminLoginBtn = document.getElementById("adminLoginBtn");
+      const doctorLoginBtn = document.getElementById("doctorLoginBtn");
+      const patientLoginBtn = document.getElementById("patientLoginBtn");
+      const registerBtn = document.getElementById("registerBtn");
+
+      const adminModal = document.getElementById("adminModal");
+      const doctorModal = document.getElementById("doctorModal");
+      const patientModal = document.getElementById("patientModal");
+      const registrationModal = document.getElementById("registrationModal");
+
+      const closeButtons = document.querySelectorAll(".close");
+
+      const adminLoginForm = document.getElementById("adminLoginForm");
+      const doctorLoginForm = document.getElementById("doctorLoginForm");
+      const patientLoginForm = document.getElementById("patientLoginForm");
+      const doctorRegistrationForm = document.getElementById(
+        "doctorRegistrationForm",
+      );
+      const patientRegistrationForm = document.getElementById(
+        "patientRegistrationForm",
+      );
+
+      const adminError = document.getElementById("adminError");
+      const doctorError = document.getElementById("doctorError");
+      const patientError = document.getElementById("patientError");
+
+      const adminSuccess = document.getElementById("adminSuccess");
+      const doctorSuccess = document.getElementById("doctorSuccess");
+      const patientSuccess = document.getElementById("patientSuccess");
+
+      const registrationTabs = document.querySelectorAll(".registration-tab");
+      const registrationForms = document.querySelectorAll(".registration-form");
+
+      // File upload elements
+      const doctorPhotoInput = document.getElementById("doctorPhoto");
+      const hospitalPhotoInput = document.getElementById("hospitalPhoto");
+      const doctorPhotoPreview = document.getElementById("doctorPhotoPreview");
+      const hospitalPhotoPreview = document.getElementById(
+        "hospitalPhotoPreview",
+      );
+      const doctorPhotoUpload = document.getElementById("doctorPhotoUpload");
+      const hospitalPhotoUpload = document.getElementById(
+        "hospitalPhotoUpload",
+      );
+
+      // Google Maps variables
+      let map;
+      let marker;
+
+      // Event Listeners
+      adminLoginBtn.addEventListener("click", () => openModal(adminModal));
+      doctorLoginBtn.addEventListener("click", () => openModal(doctorModal));
+      patientLoginBtn.addEventListener("click", () => openModal(patientModal));
+      registerBtn.addEventListener("click", () => openModal(registrationModal));
+
+      closeButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          closeModals();
+          clearForms();
+        });
+      });
+
+      window.addEventListener("click", (event) => {
+        if (event.target.classList.contains("modal")) {
+          closeModals();
+          clearForms();
+        }
+      });
+
+      adminLoginForm.addEventListener("submit", (e) => handleLogin(e, "admin"));
+      doctorLoginForm.addEventListener("submit", (e) =>
+        handleLogin(e, "doctor"),
+      );
+      patientLoginForm.addEventListener("submit", (e) =>
+        handleLogin(e, "patient"),
+      );
+
+      doctorRegistrationForm.addEventListener(
+        "submit",
+        handleDoctorRegistration,
+      );
+      patientRegistrationForm.addEventListener(
+        "submit",
+        handlePatientRegistration,
+      );
+
+      registrationTabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const tabName = tab.getAttribute("data-tab");
+          switchRegistrationTab(tabName);
+        });
+      });
+
+      // File upload handlers
+      doctorPhotoUpload.addEventListener("click", () => {
+        doctorPhotoInput.click();
+      });
+
+      hospitalPhotoUpload.addEventListener("click", () => {
+        hospitalPhotoInput.click();
+      });
+
+      doctorPhotoInput.addEventListener("change", (event) => {
+        handleImageUpload(event, doctorPhotoPreview, doctorPhotoUpload);
+      });
+
+      hospitalPhotoInput.addEventListener("change", (event) => {
+        handleImageUpload(event, hospitalPhotoPreview, hospitalPhotoUpload);
+      });
+
+      // Functions
+      function openModal(modal) {
+        closeModals();
+        modal.style.display = "block";
+
+        // Initialize map if registration modal is opened
+        if (modal === registrationModal) {
+          setTimeout(initMap, 100);
+        }
       }
-    });
-    
-    registrationForms.forEach(form => {
-      if (form.id === `${tabName}RegistrationForm`) {
-        form.classList.add('active');
-      } else {
-        form.classList.remove('active');
+
+      function closeModals() {
+        adminModal.style.display = "none";
+        doctorModal.style.display = "none";
+        patientModal.style.display = "none";
+        registrationModal.style.display = "none";
+
+        // Hide error messages
+        adminError.style.display = "none";
+        doctorError.style.display = "none";
+        patientError.style.display = "none";
+
+        adminSuccess.style.display = "none";
+        doctorSuccess.style.display = "none";
+        patientSuccess.style.display = "none";
       }
-    });
-  }
-  
-  // CORRECTED handleLogin function with proper error handling and loading states
-  function handleLogin(event, userType) {
-    event.preventDefault();
-    
-    let username, password, endpoint;
-    
-    switch(userType) {
-      case 'admin':
-        username = document.getElementById('adminUsername').value;
-        password = document.getElementById('adminPassword').value;
-        endpoint = `${API_BASE}/api/auth/admin/login`;
-        break;
-      case 'doctor':
-        username = document.getElementById('doctorUsername').value;
-        password = document.getElementById('doctorPassword').value;
-        endpoint = `${API_BASE}/api/auth/doctor/login`;
-        break;
-      case 'patient':
-        username = document.getElementById('patientUsername').value;
-        password = document.getElementById('patientPassword').value;
-        endpoint = `${API_BASE}/api/auth/patient/login`;
-        break;
-    }
-    
-    // Show loading state
-    const submitBtn = event.target.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Logging in...';
-    submitBtn.disabled = true;
-    
-    // Hide previous error messages
-    const errorElement = document.getElementById(userType + 'Error');
-    const successElement = document.getElementById(userType + 'Success');
-    errorElement.style.display = 'none';
-    successElement.style.display = 'none';
-    
-    // Make API call to backend
-    fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ username, password })
-    })
-    .then(response => {
-      if (!response.ok) {
-        // If response is not ok, try to parse error message
-        return response.json().then(errorData => {
-          throw new Error(errorData.message || 'Login failed');
+
+      function clearForms() {
+        adminLoginForm.reset();
+        doctorLoginForm.reset();
+        patientLoginForm.reset();
+        doctorRegistrationForm.reset();
+        patientRegistrationForm.reset();
+
+        // Clear image previews
+        doctorPhotoPreview.style.display = "none";
+        hospitalPhotoPreview.style.display = "none";
+        doctorPhotoUpload.querySelector("span").style.display = "block";
+        hospitalPhotoUpload.querySelector("span").style.display = "block";
+      }
+
+      function switchRegistrationTab(tabName) {
+        registrationTabs.forEach((tab) => {
+          if (tab.getAttribute("data-tab") === tabName) {
+            tab.classList.add("active");
+          } else {
+            tab.classList.remove("active");
+          }
+        });
+
+        registrationForms.forEach((form) => {
+          if (form.id === `${tabName}RegistrationForm`) {
+            form.classList.add("active");
+          } else {
+            form.classList.remove("active");
+          }
         });
       }
-      return response.json();
-    })
-    .then(data => {
-      if (data.success) {
-        // Login successful
-        if (userType === 'admin') {
-          // Store admin login status
-          localStorage.setItem('adminLoggedIn', 'true');
-          localStorage.setItem('adminUsername', username);
+
+      // CORRECTED handleLogin function with proper error handling and loading states
+      function handleLogin(event, userType) {
+        event.preventDefault();
+
+        let username, password, endpoint;
+
+        switch (userType) {
+          case "admin":
+            username = document.getElementById("adminUsername").value;
+            password = document.getElementById("adminPassword").value;
+            endpoint = `${API_BASE}/api/auth/admin/login`;
+            break;
+          case "doctor":
+            username = document.getElementById("doctorUsername").value;
+            password = document.getElementById("doctorPassword").value;
+            endpoint = `${API_BASE}/api/auth/doctor/login`;
+            break;
+          case "patient":
+            username = document.getElementById("patientUsername").value;
+            password = document.getElementById("patientPassword").value;
+            endpoint = `${API_BASE}/api/auth/patient/login`;
+            break;
         }
-        
-        // Show success message
-        successElement.style.display = 'block';
-        successElement.textContent = data.message || 'Login successful! Redirecting...';
-        
-        // Redirect after short delay
-        setTimeout(() => {
-          window.location.href = data.redirect;
-        }, 1000);
-      } else {
-        throw new Error(data.message || 'Login failed');
-      }
-    })
-    .catch(error => {
-      // Login failed
-      errorElement.style.display = 'block';
-      errorElement.textContent = error.message;
-    })
-    .finally(() => {
-      // Reset button state
-      submitBtn.textContent = originalText;
-      submitBtn.disabled = false;
-    });
-  }
-  
-  function handleImageUpload(event, previewElement, uploadContainer) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        previewElement.src = e.target.result;
-        previewElement.style.display = 'block';
-        uploadContainer.querySelector('span').style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-  
-  // Function to calculate age from date of birth
-  function calculateAge(dob) {
-    const today = new Date();
-    const birthDate = new Date(dob);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    
-    return age;
-  }
 
-  // Add event listeners for date of birth fields
-  document.getElementById('patientDob').addEventListener('change', function() {
-    const dob = this.value;
-    if (dob) {
-      const age = calculateAge(dob);
-      document.getElementById('patientAge').value = age;
-    }
-  });
+        // Show loading state
+        const submitBtn = event.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "Logging in...";
+        submitBtn.disabled = true;
 
-  document.getElementById('doctorDob').addEventListener('change', function() {
-    const dob = this.value;
-    if (dob) {
-      const age = calculateAge(dob);
-      document.getElementById('doctorAge').value = age;
-    }
-  });
+        // Hide previous error messages
+        const errorElement = document.getElementById(userType + "Error");
+        const successElement = document.getElementById(userType + "Success");
+        errorElement.style.display = "none";
+        successElement.style.display = "none";
 
-  // Registration functions
-  function handleDoctorRegistration(event) {
-    event.preventDefault();
-    
-    // Basic validation
-    const password = document.getElementById('doctorRegPassword').value;
-    const confirmPassword = document.getElementById('doctorConfirmPassword').value;
-    const dob = document.getElementById('doctorDob').value;
-    
-    if (password !== confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-    
-    if (!dob) {
-      alert('Please enter date of birth');
-      return;
-    }
-    
-    const age = document.getElementById('doctorAge').value;
-    if (age < 23) {
-      alert('Doctors must be at least 23 years old');
-      return;
-    }
-    
-    // Collect form data and create doctor object
-    const doctorData = {
-      username: document.getElementById('doctorFullName').value.replace(/\s+/g, '_').toLowerCase(),
-      passwordHash: document.getElementById('doctorRegPassword').value,
-      fullName: document.getElementById('doctorFullName').value,
-      email: document.getElementById('doctorEmail').value,
-      phone: document.getElementById('doctorPhone').value,
-      gender: document.getElementById('doctorGender').value,
-      dateOfBirth: dob,
-      age: parseInt(age),
-      specialization: document.getElementById('doctorSpecialization').value,
-      experienceYears: parseInt(document.getElementById('doctorExperience').value),
-      qualifications: document.getElementById('doctorQualifications').value,
-      medicalLicenseNo: document.getElementById('doctorLicense').value,
-      hospitalName: document.getElementById('hospitalName').value,
-      hospitalAddress: document.getElementById('hospitalAddress').value,
-      hospitalPhone: document.getElementById('hospitalPhone').value,
-      hospitalEmail: document.getElementById('hospitalEmail').value,
-      hospitalLatitude: parseFloat(document.getElementById('hospitalLat').value),
-      hospitalLongitude: parseFloat(document.getElementById('hospitalLng').value),
-      approvalStatus: "PENDING"
-    };
-    
-    // Send to backend
-    fetch(`${API_BASE}/api/doctors/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(doctorData)
-    })
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error('Registration failed');
+        // Make API call to backend
+        fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              // If response is not ok, try to parse error message
+              return response.json().then((errorData) => {
+                throw new Error(errorData.message || "Login failed");
+              });
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              // Login successful
+              if (userType === "admin") {
+                // Store admin login status
+                localStorage.setItem("adminLoggedIn", "true");
+                localStorage.setItem("adminUsername", username);
+              }
+
+              // Show success message
+              successElement.style.display = "block";
+              successElement.textContent =
+                data.message || "Login successful! Redirecting...";
+
+              // Redirect after short delay
+              setTimeout(() => {
+                window.location.href = data.redirect;
+              }, 1000);
+            } else {
+              throw new Error(data.message || "Login failed");
+            }
+          })
+          .catch((error) => {
+            // Login failed
+            errorElement.style.display = "block";
+            errorElement.textContent = error.message;
+          })
+          .finally(() => {
+            // Reset button state
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+          });
       }
-    })
-    .then(data => {
-      alert(data.message);
-      closeModals();
-    })
-    .catch(error => {
-      alert(error.message);
-    });
-  }
-  
-  function handlePatientRegistration(event) {
-    event.preventDefault();
-    
-    // Basic validation
-    const password = document.getElementById('patientRegPassword').value;
-    const confirmPassword = document.getElementById('patientConfirmPassword').value;
-    const dob = document.getElementById('patientDob').value;
-    
-    if (password !== confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-    
-    if (!dob) {
-      alert('Please enter date of birth');
-      return;
-    }
-    
-    const age = document.getElementById('patientAge').value;
-    if (age < 1) {
-      alert('Please enter a valid date of birth');
-      return;
-    }
-    
-    // Collect form data and create patient object
-    const patientData = {
-      username: document.getElementById('patientFullName').value.replace(/\s+/g, '_').toLowerCase(),
-      passwordHash: document.getElementById('patientRegPassword').value,
-      fullName: document.getElementById('patientFullName').value,
-      email: document.getElementById('patientEmail').value,
-      phone: document.getElementById('patientPhone').value,
-      gender: document.getElementById('patientGender').value,
-      dateOfBirth: dob,
-      age: parseInt(age),
-      bloodGroup: document.getElementById('patientBloodGroup').value,
-      allergies: document.getElementById('patientAllergies').value,
-      medicalConditions: document.getElementById('patientConditions').value,
-      currentMedications: document.getElementById('patientMedications').value,
-      emergencyContactName: document.getElementById('emergencyName').value,
-      emergencyContactRelationship: document.getElementById('emergenceRelationship').value,
-      emergencyContactPhone: document.getElementById('emergencePhone').value,
-      emergencyContactEmail: document.getElementById('emergenceEmail').value
-    };
-    
-    // Send to backend
-    fetch(`${API_BASE}/api/patients/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(patientData)
-    })
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error('Registration failed');
+
+      function handleImageUpload(event, previewElement, uploadContainer) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            previewElement.src = e.target.result;
+            previewElement.style.display = "block";
+            uploadContainer.querySelector("span").style.display = "none";
+          };
+          reader.readAsDataURL(file);
+        }
       }
-    })
-    .then(data => {
-      alert(data.message);
-      closeModals();
-    })
-    .catch(error => {
-      alert(error.message);
-    });
-  }
-  
-  // Google Maps initialization
-  function initMap() {
-    // Default coordinates (New York City)
-    const defaultLocation = { lat: 40.7128, lng: -74.0060 };
-    
-    // Create map
-    map = new google.maps.Map(document.getElementById('hospitalMap'), {
-      zoom: 12,
-      center: defaultLocation,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    });
-    
-    // Create marker
-    marker = new google.maps.Marker({
-      position: defaultLocation,
-      map: map,
-      draggable: true
-    });
-    
-    // Update lat/lng inputs when marker is dragged
-    marker.addListener('dragend', function() {
-      const position = marker.getPosition();
-      document.getElementById('hospitalLat').value = position.lat();
-      document.getElementById('hospitalLng').value = position.lng();
-    });
-    
-    // Update marker position when map is clicked
-    map.addListener('click', function(event) {
-      marker.setPosition(event.latLng);
-      document.getElementById('hospitalLat').value = event.latLng.lat();
-      document.getElementById('hospitalLng').value = event.latLng.lng();
-    });
-    
-    // Set initial values for lat/lng inputs
-    document.getElementById('hospitalLat').value = defaultLocation.lat;
-    document.getElementById('hospitalLng').value = defaultLocation.lng;
-    
-    // Add search box for location search
-    const input = document.createElement('input');
-    input.placeholder = 'Search for hospital location';
-    input.style.cssText = 'margin-top:10px;padding:5px;width:100%;box-sizing:border-box;';
-    
-    const searchBox = new google.maps.places.SearchBox(input);
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-    
-    // Bias the SearchBox results towards current map's viewport
-    map.addListener('bounds_changed', function() {
-      searchBox.setBounds(map.getBounds());
-    });
-    
-    // Listen for the event when a place is selected
-    searchBox.addListener('places_changed', function() {
-      const places = searchBox.getPlaces();
-      
-      if (places.length === 0) {
-        return;
+
+      // Function to calculate age from date of birth
+      function calculateAge(dob) {
+        const today = new Date();
+        const birthDate = new Date(dob);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < birthDate.getDate())
+        ) {
+          age--;
+        }
+
+        return age;
       }
-      
-      // For each place, get the location and set the marker
-      const bounds = new google.maps.LatLngBounds();
-      places.forEach(function(place) {
-        if (!place.geometry) {
-          console.log("Returned place contains no geometry");
+
+      // Add event listeners for date of birth fields
+      document
+        .getElementById("patientDob")
+        .addEventListener("change", function () {
+          const dob = this.value;
+          if (dob) {
+            const age = calculateAge(dob);
+            document.getElementById("patientAge").value = age;
+          }
+        });
+
+      document
+        .getElementById("doctorDob")
+        .addEventListener("change", function () {
+          const dob = this.value;
+          if (dob) {
+            const age = calculateAge(dob);
+            document.getElementById("doctorAge").value = age;
+          }
+        });
+
+      // Registration functions
+      function handleDoctorRegistration(event) {
+        event.preventDefault();
+
+        // Basic validation
+        const password = document.getElementById("doctorRegPassword").value;
+        const confirmPassword = document.getElementById(
+          "doctorConfirmPassword",
+        ).value;
+        const dob = document.getElementById("doctorDob").value;
+
+        if (password !== confirmPassword) {
+          alert("Passwords do not match");
           return;
         }
-        
-        if (place.geometry.viewport) {
-          bounds.union(place.geometry.viewport);
-        } else {
-          bounds.extend(place.geometry.location);
-        }
-        
-        marker.setPosition(place.geometry.location);
-        document.getElementById('hospitalLat').value = place.geometry.location.lat();
-        document.getElementById('hospitalLng').value = place.geometry.location.lng();
-      });
-      map.fitBounds(bounds);
-    });
-  }
-  
-  // Load Google Maps API
-  function loadGoogleMapsAPI() {
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&libraries=places&callback=initMap`;
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-  }
-  
-  // Initialize the application
-  window.onload = function() {
-    loadGoogleMapsAPI();
-  };
-</script>
 
-</body>
+        if (!dob) {
+          alert("Please enter date of birth");
+          return;
+        }
+
+        const age = document.getElementById("doctorAge").value;
+        if (age < 23) {
+          alert("Doctors must be at least 23 years old");
+          return;
+        }
+
+        // Collect form data and create doctor object
+        const doctorData = {
+          username: document
+            .getElementById("doctorFullName")
+            .value.replace(/\s+/g, "_")
+            .toLowerCase(),
+          passwordHash: document.getElementById("doctorRegPassword").value,
+          fullName: document.getElementById("doctorFullName").value,
+          email: document.getElementById("doctorEmail").value,
+          phone: document.getElementById("doctorPhone").value,
+          gender: document.getElementById("doctorGender").value,
+          dateOfBirth: dob,
+          age: parseInt(age),
+          specialization: document.getElementById("doctorSpecialization").value,
+          experienceYears: parseInt(
+            document.getElementById("doctorExperience").value,
+          ),
+          qualifications: document.getElementById("doctorQualifications").value,
+          medicalLicenseNo: document.getElementById("doctorLicense").value,
+          hospitalName: document.getElementById("hospitalName").value,
+          hospitalAddress: document.getElementById("hospitalAddress").value,
+          hospitalPhone: document.getElementById("hospitalPhone").value,
+          hospitalEmail: document.getElementById("hospitalEmail").value,
+          hospitalLatitude: parseFloat(
+            document.getElementById("hospitalLat").value,
+          ),
+          hospitalLongitude: parseFloat(
+            document.getElementById("hospitalLng").value,
+          ),
+          approvalStatus: "PENDING",
+        };
+
+        // Send to backend
+        fetch(`${API_BASE}/api/doctors/register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(doctorData),
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("Registration failed");
+            }
+          })
+          .then((data) => {
+            alert(data.message);
+            closeModals();
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
+      }
+
+      function handlePatientRegistration(event) {
+        event.preventDefault();
+
+        // Basic validation
+        const password = document.getElementById("patientRegPassword").value;
+        const confirmPassword = document.getElementById(
+          "patientConfirmPassword",
+        ).value;
+        const dob = document.getElementById("patientDob").value;
+
+        if (password !== confirmPassword) {
+          alert("Passwords do not match");
+          return;
+        }
+
+        if (!dob) {
+          alert("Please enter date of birth");
+          return;
+        }
+
+        const age = document.getElementById("patientAge").value;
+        if (age < 1) {
+          alert("Please enter a valid date of birth");
+          return;
+        }
+
+        // Collect form data and create patient object
+        const patientData = {
+          username: document
+            .getElementById("patientFullName")
+            .value.replace(/\s+/g, "_")
+            .toLowerCase(),
+          passwordHash: document.getElementById("patientRegPassword").value,
+          fullName: document.getElementById("patientFullName").value,
+          email: document.getElementById("patientEmail").value,
+          phone: document.getElementById("patientPhone").value,
+          gender: document.getElementById("patientGender").value,
+          dateOfBirth: dob,
+          age: parseInt(age),
+          bloodGroup: document.getElementById("patientBloodGroup").value,
+          allergies: document.getElementById("patientAllergies").value,
+          medicalConditions: document.getElementById("patientConditions").value,
+          currentMedications:
+            document.getElementById("patientMedications").value,
+          emergencyContactName: document.getElementById("emergencyName").value,
+          emergencyContactRelationship: document.getElementById(
+            "emergenceRelationship",
+          ).value,
+          emergencyContactPhone:
+            document.getElementById("emergencePhone").value,
+          emergencyContactEmail:
+            document.getElementById("emergenceEmail").value,
+        };
+
+        // Send to backend
+        fetch(`${API_BASE}/api/patients/register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(patientData),
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("Registration failed");
+            }
+          })
+          .then((data) => {
+            alert(data.message);
+            closeModals();
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
+      }
+
+      // Google Maps initialization
+      function initMap() {
+        // Default coordinates (New York City)
+        const defaultLocation = { lat: 40.7128, lng: -74.006 };
+
+        // Create map
+        map = new google.maps.Map(document.getElementById("hospitalMap"), {
+          zoom: 12,
+          center: defaultLocation,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+        });
+
+        // Create marker
+        marker = new google.maps.Marker({
+          position: defaultLocation,
+          map: map,
+          draggable: true,
+        });
+
+        // Update lat/lng inputs when marker is dragged
+        marker.addListener("dragend", function () {
+          const position = marker.getPosition();
+          document.getElementById("hospitalLat").value = position.lat();
+          document.getElementById("hospitalLng").value = position.lng();
+        });
+
+        // Update marker position when map is clicked
+        map.addListener("click", function (event) {
+          marker.setPosition(event.latLng);
+          document.getElementById("hospitalLat").value = event.latLng.lat();
+          document.getElementById("hospitalLng").value = event.latLng.lng();
+        });
+
+        // Set initial values for lat/lng inputs
+        document.getElementById("hospitalLat").value = defaultLocation.lat;
+        document.getElementById("hospitalLng").value = defaultLocation.lng;
+
+        // Add search box for location search
+        const input = document.createElement("input");
+        input.placeholder = "Search for hospital location";
+        input.style.cssText =
+          "margin-top:10px;padding:5px;width:100%;box-sizing:border-box;";
+
+        const searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        // Bias the SearchBox results towards current map's viewport
+        map.addListener("bounds_changed", function () {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        // Listen for the event when a place is selected
+        searchBox.addListener("places_changed", function () {
+          const places = searchBox.getPlaces();
+
+          if (places.length === 0) {
+            return;
+          }
+
+          // For each place, get the location and set the marker
+          const bounds = new google.maps.LatLngBounds();
+          places.forEach(function (place) {
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
+
+            if (place.geometry.viewport) {
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+
+            marker.setPosition(place.geometry.location);
+            document.getElementById("hospitalLat").value =
+              place.geometry.location.lat();
+            document.getElementById("hospitalLng").value =
+              place.geometry.location.lng();
+          });
+          map.fitBounds(bounds);
+        });
+      }
+
+      // Load Google Maps API
+      function loadGoogleMapsAPI() {
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&libraries=places&callback=initMap`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+
+      // Initialize the application
+      window.onload = function () {
+        loadGoogleMapsAPI();
+      };
+    </script>
+  </body>
 </html>

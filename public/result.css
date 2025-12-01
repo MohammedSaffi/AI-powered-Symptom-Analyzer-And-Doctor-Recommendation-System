@@ -1,82 +1,81 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f7fb;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
 
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: #f4f7fb;
-        color: #333;
-        margin: 0;
-        padding: 0;
-      }
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+}
 
-      .container {
-        max-width: 900px;
-        margin: 40px auto;
-        background: #fff;
-        border-radius: 16px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        padding: 40px;
-      }
+h1 {
+  text-align: center;
+  color: #2b3a67;
+  margin-bottom: 30px;
+}
 
-      h1 {
-        text-align: center;
-        color: #2b3a67;
-        margin-bottom: 30px;
-      }
+.section {
+  margin-bottom: 25px;
+  padding: 20px;
+  border-radius: 12px;
+  line-height: 1.6;
+}
 
-      .section {
-        margin-bottom: 25px;
-        padding: 20px;
-        border-radius: 12px;
-        line-height: 1.6;
-      }
+.symptoms {
+  background-color: #e0f7fa;
+  border-left: 6px solid #00acc1;
+}
 
-      .symptoms {
-        background-color: #e0f7fa;
-        border-left: 6px solid #00acc1;
-      }
+.diseases {
+  background-color: #e8f5e9;
+  border-left: 6px solid #43a047;
+}
 
-      .diseases {
-        background-color: #e8f5e9;
-        border-left: 6px solid #43a047;
-      }
+.causes {
+  background-color: #fff3e0;
+  border-left: 6px solid #fb8c00;
+}
 
-      .causes {
-        background-color: #fff3e0;
-        border-left: 6px solid #fb8c00;
-      }
+.doctor {
+  background-color: #e3f2fd;
+  border-left: 6px solid #1976d2;
+}
 
-      .doctor {
-        background-color: #e3f2fd;
-        border-left: 6px solid #1976d2;
-      }
+.firstaid {
+  background-color: #ffebee;
+  border-left: 6px solid #e53935;
+}
 
-      .firstaid {
-        background-color: #ffebee;
-        border-left: 6px solid #e53935;
-      }
+.note {
+  background-color: #f3e5f5;
+  border-left: 6px solid #8e24aa;
+  font-style: italic;
+}
 
-      .note {
-        background-color: #f3e5f5;
-        border-left: 6px solid #8e24aa;
-        font-style: italic;
-      }
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: inherit;
+  margin: 0;
+}
 
-      pre {
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        font-family: inherit;
-        margin: 0;
-      }
+.back-btn {
+  display: inline-block;
+  background-color: #2b3a67;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
 
-      .back-btn {
-        display: inline-block;
-        background-color: #2b3a67;
-        color: white;
-        padding: 10px 20px;
-        text-decoration: none;
-        border-radius: 8px;
-        transition: background 0.3s;
-      }
-
-      .back-btn:hover {
-        background-color: #1a2750;
-      }
+.back-btn:hover {
+  background-color: #1a2750;
+}

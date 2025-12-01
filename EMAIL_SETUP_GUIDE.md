@@ -34,6 +34,7 @@ EMAIL_PASS=abcdefghijklmnop
 ```
 
 **Important Notes:**
+
 - `EMAIL_USER` should be your full Gmail address (e.g., `yourname@gmail.com`)
 - `EMAIL_PASS` should be the 16-character App Password (remove spaces if any)
 - **DO NOT** use your regular Gmail password - only use the App Password
@@ -49,25 +50,30 @@ After setting up, test your email configuration:
 ### Troubleshooting
 
 #### Error: "Authentication failed" or "Invalid login"
+
 - **Solution**: Make sure you're using the App Password (16 characters), not your regular Gmail password
 - Double-check that 2-Step Verification is enabled
 - Regenerate the App Password if needed
 
 #### Error: "EMAIL_USER is not set"
+
 - **Solution**: Make sure your `.env` file has `EMAIL_USER=your-email@gmail.com`
 - Restart your server after adding environment variables
 
 #### Error: "EMAIL_PASS is not set"
+
 - **Solution**: Make sure your `.env` file has `EMAIL_PASS=your-16-char-app-password`
 - Restart your server after adding environment variables
 
 #### Emails not being received
+
 - Check your **Spam/Junk** folder
 - Wait a few minutes (Gmail might delay emails)
 - Make sure the recipient email is correct
 - Check server logs for detailed error messages
 
 #### Still having issues?
+
 1. Check server console logs for detailed error messages
 2. Verify your `.env` file is in the project root directory
 3. Make sure you restarted the server after updating `.env`
@@ -76,6 +82,7 @@ After setting up, test your email configuration:
 ## Alternative: Using Other Email Services
 
 If you prefer not to use Gmail, you can modify `services/emailService.js` to use:
+
 - **Outlook/Hotmail**: Similar setup with App Password
 - **SendGrid**: API-based service
 - **Mailgun**: API-based service
@@ -94,4 +101,3 @@ const transporter = nodemailer.createTransporter({
   },
 });
 ```
-

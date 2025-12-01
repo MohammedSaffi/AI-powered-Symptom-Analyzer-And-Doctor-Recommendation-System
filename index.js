@@ -1,13 +1,11 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-// import bcrypt from "bcryptjs";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
 import path from "path";
 import { fileURLToPath } from "url";
-// import { urlencoded } from "express";
 import { adminRouter } from "./routes/admin.js";
 import { admin } from "./models/admin.js";
 import { doctor } from "./models/doctor.js";
@@ -55,26 +53,26 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(express.json());
 app.use(cookieParser());
-app.use(session({
-  secret: process.env.SESSION_SECRET || "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",
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // 24 hours
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "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",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }, // 24 hours
+  }),
+);
 app.use(passport.initialize());
 app.use(passport.session());
 app.set("view engine", "ejs");
 
 app.use((req, res, next) => {
-    if (req.session.patientName) {
-        res.locals.name = req.session.patientName;
-        res.locals.doctorid = req.session.doctorId;
-        
-    }
-  
-    next();
+  if (req.session.patientName) {
+    res.locals.name = req.session.patientName;
+    res.locals.doctorid = req.session.doctorId;
+  }
+
+  next();
 });
-// app.set("views", path.join(__dirname, "views"));
 
 // Routes
 app.get("/", (req, res) => {
@@ -84,13 +82,11 @@ app.get("/", (req, res) => {
 
 // Admin Login
 app.post("/admin", async (req, res) => {
- console.log("The admin details are",req.body);
+  console.log("The admin details are", req.body);
   const { email, password } = req.body;
   const response = await admin.find();
   console.log(response);
   try {
-    // const admin = await Admin.findOne({ email });
-    // if (!admin) return res.status(404).send("❌ Admin not found!");
     if (email == "admin@gmail.com" && password == "asdf") {
       res
         .cookie("admin", JSON.stringify(email, password))
@@ -129,8 +125,6 @@ app.post("/doctor", upload.single("idproof"), async (req, res) => {
       idproof: URL,
       doctorid: doctorid,
     });
-    // const newDoctor = new Doctor({ name, phone, gender });
-    // await newDoctor.save();
     res.redirect("/verifyDoctor");
   } catch (error) {
     console.error(error);
@@ -141,14 +135,8 @@ app.post("/doctor", upload.single("idproof"), async (req, res) => {
 // Patient Verify
 app.get("/patientVerify", async (req, res) => {
   const { aadhar, phone } = req.query;
-  // console.log
   try {
-    // if (!aadhar && !phone)
-    //   return res.status(400).send("⚠️ Please provide Aadhar or phone number");
-
-    // const newPatient = new Patient({ aadhar, phone });
-    // await newPatient.save();
-    res.redirect('/patientPage');
+    res.redirect("/patientPage");
   } catch (error) {
     console.error(error);
     res.status(500).send("⚠️ Error verifying patient");
@@ -160,10 +148,7 @@ app.post("/sendAppointment", (req, res) => {
   res.send("Appointment booked successfully");
 });
 
-
-
-
-app.use('/patientPage',patientRouter);
+app.use("/patientPage", patientRouter);
 
 app.use("/adminPage", adminRouter);
 

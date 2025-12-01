@@ -8,12 +8,14 @@ const router = Router();
 // Admin dashboard
 router.get("/", async (req, res) => {
   try {
-    const pendingDoctors = await doctor.find({ status: "pending" }) || [];
-    const approvedDoctors = await doctor.find({ status: "approved" }) || [];
-    
-    const approvedDoctorsCount = await doctor.countDocuments({ status: "approved" }) || 0;
-    const rejectedDoctorsCount = await doctor.countDocuments({ status: "rejected" }) || 0;
-    const totalDoctorsCount = await doctor.countDocuments() || 0;
+    const pendingDoctors = (await doctor.find({ status: "pending" })) || [];
+    const approvedDoctors = (await doctor.find({ status: "approved" })) || [];
+
+    const approvedDoctorsCount =
+      (await doctor.countDocuments({ status: "approved" })) || 0;
+    const rejectedDoctorsCount =
+      (await doctor.countDocuments({ status: "rejected" })) || 0;
+    const totalDoctorsCount = (await doctor.countDocuments()) || 0;
 
     res.render("admin", {
       pendingDoctors,
@@ -29,49 +31,51 @@ router.get("/", async (req, res) => {
 });
 
 // Get doctor details for modal
-router.get('/doctor-details/:doctorid', async (req, res) => {
+router.get("/doctor-details/:doctorid", async (req, res) => {
   try {
     const doctorId = req.params.doctorid;
-    const foundDoctor = await doctor.findOne({ doctorid: doctorId }).select('-passwordHash');
-    
+    const foundDoctor = await doctor
+      .findOne({ doctorid: doctorId })
+      .select("-passwordHash");
+
     if (!foundDoctor) {
       return res.status(404).json({
         success: false,
-        message: "Doctor not found"
+        message: "Doctor not found",
       });
     }
-    
+
     res.json({
       success: true,
-      doctor: foundDoctor
+      doctor: foundDoctor,
     });
   } catch (error) {
     console.error("Error fetching doctor details:", error);
     res.status(500).json({
       success: false,
-      message: "Error fetching doctor details"
+      message: "Error fetching doctor details",
     });
   }
 });
 
 // Approve doctor
-router.get('/approve-doctor/:doctorid', async (req, res) => {
+router.get("/approve-doctor/:doctorid", async (req, res) => {
   const doctorID = req.params.doctorid;
   try {
     await doctor.findOneAndUpdate(
-      { doctorid: doctorID }, 
-      { 
-        $set: { 
+      { doctorid: doctorID },
+      {
+        $set: {
           status: "approved",
-          licenseVerified: true // Mark license as verified when approved
-        } 
+          licenseVerified: true, // Mark license as verified when approved
+        },
       },
-      { new: true }
+      { new: true },
     );
-    
+
     // In a real application, you might want to send an email notification here
     // await sendApprovalEmail(doctorID);
-    
+
     res.send(`
       <!DOCTYPE html>
       <html>
@@ -107,12 +111,12 @@ router.get('/approve-doctor/:doctorid', async (req, res) => {
 });
 
 // Reject doctor
-router.get('/reject-doctor/:doctorid', async (req, res) => {
+router.get("/reject-doctor/:doctorid", async (req, res) => {
   const doctorID = req.params.doctorid;
   try {
     // Get doctor details before deleting (for potential notification)
     const doctorDetails = await doctor.findOne({ doctorid: doctorID });
-    
+
     await doctor.findOneAndDelete({ doctorid: doctorID });
 
     if (!doctorDetails) {
@@ -121,7 +125,7 @@ router.get('/reject-doctor/:doctorid', async (req, res) => {
 
     // In a real application, you might want to send a rejection email here
     // await sendRejectionEmail(doctorDetails.email);
-    
+
     res.send(`
       <!DOCTYPE html>
       <html>
@@ -156,16 +160,18 @@ router.get('/reject-doctor/:doctorid', async (req, res) => {
   }
 });
 
-
 // Manage Doctors Page
 router.get("/manage-doctors", async (req, res) => {
   try {
     const doctors = await doctor.find();
-    
-    const totalDoctorsCount = await doctor.countDocuments() || 0;
-    const approvedDoctorsCount = await doctor.countDocuments({ status: "approved" }) || 0;
-    const pendingDoctorsCount = await doctor.countDocuments({ status: "pending" }) || 0;
-    const rejectedDoctorsCount = await doctor.countDocuments({ status: "rejected" }) || 0;
+
+    const totalDoctorsCount = (await doctor.countDocuments()) || 0;
+    const approvedDoctorsCount =
+      (await doctor.countDocuments({ status: "approved" })) || 0;
+    const pendingDoctorsCount =
+      (await doctor.countDocuments({ status: "pending" })) || 0;
+    const rejectedDoctorsCount =
+      (await doctor.countDocuments({ status: "rejected" })) || 0;
 
     res.render("manage-doctors", {
       doctors,
@@ -186,13 +192,13 @@ router.post("/remove-doctor/:doctorid", async (req, res) => {
   try {
     // Instead of deleting, we'll mark as rejected
     await doctor.findOneAndUpdate(
-      { doctorid: doctorID }, 
-      { 
-        $set: { 
-          status: "rejected"
-        } 
+      { doctorid: doctorID },
+      {
+        $set: {
+          status: "rejected",
+        },
       },
-      { new: true }
+      { new: true },
     );
 
     res.send(`
@@ -270,15 +276,16 @@ router.post("/delete-doctor/:doctorid", async (req, res) => {
   }
 });
 
-
 // Patient Records Page
 router.get("/patients", async (req, res) => {
   try {
-    const patients = await patient.find().sort({ createdAt: -1 }) || [];
-    
-    const totalPatientsCount = await patient.countDocuments() || 0;
-    const googleVerifiedCount = await patient.countDocuments({ verified: "google" }) || 0;
-    const normalVerifiedCount = await patient.countDocuments({ verified: "normal" }) || 0;
+    const patients = (await patient.find().sort({ createdAt: -1 })) || [];
+
+    const totalPatientsCount = (await patient.countDocuments()) || 0;
+    const googleVerifiedCount =
+      (await patient.countDocuments({ verified: "google" })) || 0;
+    const normalVerifiedCount =
+      (await patient.countDocuments({ verified: "normal" })) || 0;
 
     res.render("patient-records", {
       patients,
@@ -293,27 +300,27 @@ router.get("/patients", async (req, res) => {
 });
 
 // Get patient details for modal
-router.get('/patient-details/:patientId', async (req, res) => {
+router.get("/patient-details/:patientId", async (req, res) => {
   try {
     const patientId = req.params.patientId;
     const foundPatient = await patient.findById(patientId);
-    
+
     if (!foundPatient) {
       return res.status(404).json({
         success: false,
-        message: "Patient not found"
+        message: "Patient not found",
       });
     }
-    
+
     res.json({
       success: true,
-      patient: foundPatient
+      patient: foundPatient,
     });
   } catch (error) {
     console.error("Error fetching patient details:", error);
     res.status(500).json({
       success: false,
-      message: "Error fetching patient details"
+      message: "Error fetching patient details",
     });
   }
 });
@@ -358,29 +365,34 @@ router.post("/delete-patient/:patientId", async (req, res) => {
   }
 });
 
-
 // Appointments Page
 router.get("/appointments", async (req, res) => {
   try {
     // Get current date and date 5 days ago
     const fiveDaysAgo = new Date();
     fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
-    
+
     // Get all appointments
-    const allAppointments = await appointment.find()
-      .populate('patientId', 'name email username')
-      .sort({ createdAt: -1 }) || [];
-    
+    const allAppointments =
+      (await appointment
+        .find()
+        .populate("patientId", "name email username")
+        .sort({ createdAt: -1 })) || [];
+
     // Get recent appointments (last 5 days)
-    const recentAppointments = await appointment.find({
-      createdAt: { $gte: fiveDaysAgo }
-    })
-      .populate('patientId', 'name email username')
-      .sort({ createdAt: -1 }) || [];
-    
-    const totalAppointmentsCount = await appointment.countDocuments() || 0;
-    const pendingAppointmentsCount = await appointment.countDocuments({ status: "pending" }) || 0;
-    const confirmedAppointmentsCount = await appointment.countDocuments({ status: "confirmed" }) || 0;
+    const recentAppointments =
+      (await appointment
+        .find({
+          createdAt: { $gte: fiveDaysAgo },
+        })
+        .populate("patientId", "name email username")
+        .sort({ createdAt: -1 })) || [];
+
+    const totalAppointmentsCount = (await appointment.countDocuments()) || 0;
+    const pendingAppointmentsCount =
+      (await appointment.countDocuments({ status: "pending" })) || 0;
+    const confirmedAppointmentsCount =
+      (await appointment.countDocuments({ status: "confirmed" })) || 0;
     const recentAppointmentsCount = recentAppointments.length || 0;
 
     res.render("appointments", {
@@ -398,33 +410,35 @@ router.get("/appointments", async (req, res) => {
 });
 
 // Get appointment details for modal
-router.get('/appointment-details/:appointmentId', async (req, res) => {
+router.get("/appointment-details/:appointmentId", async (req, res) => {
   try {
     const appointmentId = req.params.appointmentId;
-    const foundAppointment = await appointment.findById(appointmentId)
-      .populate('patientId', 'name email username phone age gender address');
-    
+    const foundAppointment = await appointment
+      .findById(appointmentId)
+      .populate("patientId", "name email username phone age gender address");
+
     if (!foundAppointment) {
       return res.status(404).json({
         success: false,
-        message: "Appointment not found"
+        message: "Appointment not found",
       });
     }
-    
+
     // Get doctor details
-    const foundDoctor = await doctor.findOne({ doctorid: foundAppointment.doctorid })
-      .select('name email specialization hospitalName location');
-    
+    const foundDoctor = await doctor
+      .findOne({ doctorid: foundAppointment.doctorid })
+      .select("name email specialization hospitalName location");
+
     res.json({
       success: true,
       appointment: foundAppointment,
-      doctor: foundDoctor || null
+      doctor: foundDoctor || null,
     });
   } catch (error) {
     console.error("Error fetching appointment details:", error);
     res.status(500).json({
       success: false,
-      message: "Error fetching appointment details"
+      message: "Error fetching appointment details",
     });
   }
 });
@@ -473,27 +487,24 @@ router.post("/delete-appointment/:appointmentId", async (req, res) => {
 router.post("/update-appointment-status/:appointmentId", async (req, res) => {
   const appointmentId = req.params.appointmentId;
   const { status } = req.body;
-  
+
   try {
-    const updatedAppointment = await appointment.findByIdAndUpdate(
-      appointmentId,
-      { status: status },
-      { new: true }
-    ).populate('patientId', 'name email');
+    const updatedAppointment = await appointment
+      .findByIdAndUpdate(appointmentId, { status: status }, { new: true })
+      .populate("patientId", "name email");
 
     res.json({
       success: true,
       message: `Appointment status updated to ${status}`,
-      appointment: updatedAppointment
+      appointment: updatedAppointment,
     });
   } catch (error) {
     console.error("Error updating appointment status:", error);
     res.status(500).json({
       success: false,
-      message: "Error updating appointment status"
+      message: "Error updating appointment status",
     });
   }
 });
-
 
 export const adminRouter = router;
