@@ -10,7 +10,7 @@ const patientSchema = new mongoose.Schema({
     // unique: true,
     sparse: true, // Allow multiple nulls
   },
-    username: {
+  username: {
     type: String,  // Enforce unique usernames // Each patient must have a username
   },
   age: {
@@ -30,7 +30,10 @@ const patientSchema = new mongoose.Schema({
     enum:["google","normal"],
     default:"normal"
   }
-  
+}, {
+  timestamps: true // This adds createdAt and updatedAt fields automatically
 });
+
+console.log("Patient model created");
 
 export const patient = mongoose.model("patient", patientSchema);

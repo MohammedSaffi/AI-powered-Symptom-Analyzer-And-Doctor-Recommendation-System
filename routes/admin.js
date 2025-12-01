@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { doctor } from "../models/doctor.js";
+import { patient } from "../models/patient.js";
 
 const router = Router();
 
@@ -265,6 +266,94 @@ router.post("/delete-doctor/:doctorid", async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).send("Error deleting doctor");
+  }
+});
+
+
+// Patient Records Page
+router.get("/patients", async (req, res) => {
+  try {
+    const patients = await patient.find().sort({ createdAt: -1 }) || [];
+    
+    const totalPatientsCount = await patient.countDocuments() || 0;
+    const googleVerifiedCount = await patient.countDocuments({ verified: "google" }) || 0;
+    const normalVerifiedCount = await patient.countDocuments({ verified: "normal" }) || 0;
+
+    res.render("patient-records", {
+      patients,
+      totalPatientsCount,
+      googleVerifiedCount,
+      normalVerifiedCount,
+    });
+  } catch (error) {
+    console.error("Error loading patient records page:", error);
+    res.status(500).send("Error loading patient records");
+  }
+});
+
+// Get patient details for modal
+router.get('/patient-details/:patientId', async (req, res) => {
+  try {
+    const patientId = req.params.patientId;
+    const foundPatient = await patient.findById(patientId);
+    
+    if (!foundPatient) {
+      return res.status(404).json({
+        success: false,
+        message: "Patient not found"
+      });
+    }
+    
+    res.json({
+      success: true,
+      patient: foundPatient
+    });
+  } catch (error) {
+    console.error("Error fetching patient details:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching patient details"
+    });
+  }
+});
+
+// Delete patient
+router.post("/delete-patient/:patientId", async (req, res) => {
+  const patientId = req.params.patientId;
+  try {
+    await patient.findByIdAndDelete(patientId);
+
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Patient Deleted</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+      </head>
+      <body class="min-h-screen flex items-center justify-center bg-gray-100">
+        <div class="bg-white p-8 rounded-lg shadow-lg max-w-md text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-trash text-red-600 text-2xl"></i>
+          </div>
+          <h1 class="text-2xl font-bold text-gray-800 mb-2">Patient Deleted</h1>
+          <p class="text-gray-600 mb-6">The patient has been permanently deleted from the system.</p>
+          <a href="/adminPage/patients" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+            Return to Patient Records
+          </a>
+        </div>
+        <script>
+          setTimeout(() => {
+            window.location.href = '/adminPage/patients';
+          }, 3000);
+        </script>
+      </body>
+      </html>
+    `);
+  } catch (e) {
+    console.error(e);
+    res.status(500).send("Error deleting patient");
   }
 });
 
