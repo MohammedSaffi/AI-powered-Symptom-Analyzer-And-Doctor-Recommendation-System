@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import MongoStore from "connect-mongo";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import session from "express-session";
@@ -58,8 +59,15 @@ app.use(
     secret: process.env.SESSION_SECRET || "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",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }, // 24 hours
-  }),
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      collectionName: "sessions",
+    }),
+    cookie: {
+      secure: false, // set true only if using https
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
 );
 app.use(passport.initialize());
 app.use(passport.session());

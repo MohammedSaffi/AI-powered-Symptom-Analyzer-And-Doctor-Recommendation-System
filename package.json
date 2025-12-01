@@ -18,6 +18,7 @@
     "@cerebras/cerebras_cloud_sdk": "^1.56.1",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.8.0",
+    "connect-mongo": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
