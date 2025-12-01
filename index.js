@@ -56,7 +56,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "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",
+    secret: process.env.SESSION_SECRET || "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",
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
