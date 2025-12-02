@@ -38,19 +38,24 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const storage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, "public");
-  },
-  filename: (req, file, callback) => {
-    callback(null, file.originalname);
-  },
-});
+// Remove the diskStorage and use memoryStorage instead
+// const storage = multer.diskStorage({  // ← REMOVE THIS
+//   destination: (req, file, callback) => {
+//     callback(null, "public");
+//   },
+//   filename: (req, file, callback) => {
+//     callback(null, file.originalname);
+//   },
+// });
+
+// Use memory storage (no local files)
+const storage = multer.memoryStorage();
 
 const upload = multer({ storage: storage });
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
+// Remove or keep this static only for other assets (not for uploads)
 app.use(express.static("public"));
 app.use(express.json());
 app.use(cookieParser());
@@ -110,33 +115,71 @@ app.post("/admin", async (req, res) => {
   }
 });
 
-// Doctor Register
+// Doctor Register - UPDATED TO UPLOAD DIRECTLY TO CLOUDINARY
 app.post("/doctor", upload.single("idproof"), async (req, res) => {
   const { name, email, phone, gender } = req.body;
-  // console.log(req.file.path);
-  console.log(JSON.stringify(req.body));
-  const file = req.file.path;
+  console.log("Doctor registration data:", JSON.stringify(req.body));
+  
+  // Check if file was uploaded
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      message: "ID proof file is required"
+    });
+  }
 
   try {
-    const cloudinaryRes = await cloudinary.uploader.upload(file, {
-      folder: "Rahul",
+    // Upload directly to Cloudinary from buffer (no local file)
+    const cloudinaryRes = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: "doctor-idproofs",
+          public_id: `idproof_${Date.now()}_${email}`,
+          resource_type: 'auto',
+        },
+        (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+      
+      // Pipe the buffer to Cloudinary
+      uploadStream.end(req.file.buffer);
     });
-    console.log(cloudinaryRes);
 
-    const URL = cloudinaryRes.secure_url;
+    console.log("Cloudinary upload successful:", cloudinaryRes.secure_url);
+
     const doctorid = generateCode();
+    
+    // Create doctor with Cloudinary URL
     await doctor.create({
       name: name,
       email: email,
       phone: phone,
       gender: gender,
-      idproof: URL,
+      idproof: cloudinaryRes.secure_url, // Store Cloudinary URL
       doctorid: doctorid,
+      idproofPublicId: cloudinaryRes.public_id, // Optional: store public_id for future management
     });
+    
     res.redirect("/verifyDoctor");
   } catch (error) {
-    console.error(error);
-    res.status(500).send("⚠️ Error registering doctor");
+    console.error("Error in doctor registration:", error);
+    
+    // Provide user-friendly error message
+    let errorMessage = "Error registering doctor";
+    if (error.message && error.message.includes("E11000")) {
+      errorMessage = "Doctor with this email already exists";
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: errorMessage,
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 

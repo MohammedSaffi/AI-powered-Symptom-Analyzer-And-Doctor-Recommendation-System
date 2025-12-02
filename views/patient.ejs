@@ -441,6 +441,32 @@
                 bottom: 80px;
             }
         }
+        
+        /* Doctor Profile Picture Styles */
+        .doctor-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Phone number validation styles */
+        .phone-error {
+            display: none;
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .phone-valid {
+            border-color: #10b981;
+        }
+
+        .phone-invalid {
+            border-color: #dc2626;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -565,11 +591,21 @@
                     <% doctors.forEach(doctor => { %>
                         <div class="glass-effect card rounded-2xl p-6">
                             <div class="flex items-start space-x-5">
-                                <!-- Doctor Avatar with Status -->
+                                <!-- Doctor Avatar with Status - UPDATED TO SHOW CLOUDINARY PROFILE PICTURE -->
                                 <div class="flex-shrink-0 relative">
-                                    <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg">
-                                        <%= doctor.name.charAt(0).toUpperCase() %>
-                                    </div>
+                                    <% if (doctor.profilePicture) { %>
+                                        <!-- Show Cloudinary profile picture if available -->
+                                        <img src="<%= doctor.profilePicture %>" 
+                                             alt="Dr. <%= doctor.name %>"
+                                             class="doctor-avatar w-20 h-20"
+                                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=&quot;w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg&quot;><%= doctor.name.charAt(0).toUpperCase() %></div>';">
+                                    <% } else { %>
+                                        <!-- Fallback to gradient avatar if no profile picture -->
+                                        <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg">
+                                            <%= doctor.name.charAt(0).toUpperCase() %>
+                                        </div>
+                                    <% } %>
+                                    
                                     <!-- Status Badge -->
                                     <div class="absolute -top-2 -right-2">
                                         <% if (doctor.status === 'approved') { %>
@@ -727,8 +763,24 @@
                             </div>
                             <div>
                                 <label for="patient-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
-                                <input type="tel" id="patient-phone" name="patientPhone" required
-                                       class="input-field w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                <div class="relative">
+                                    <input type="tel" 
+                                           id="patient-phone" 
+                                           name="patientPhone" 
+                                           required
+                                           maxlength="10"
+                                           minlength="10"
+                                           pattern="[0-9]{10}"
+                                           placeholder="Enter 10-digit number"
+                                           class="input-field phone-number-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                    <div class="phone-error" id="phone-error">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        Please enter exactly 10 digits (numbers only)
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <span id="phone-count" class="text-xs text-gray-400">0/10</span>
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <label for="patient-age" class="block text-sm font-medium text-gray-700 mb-1">Age</label>
@@ -855,6 +907,69 @@
                 });
             }
 
+            // Phone number validation and formatting
+            const phoneInput = document.getElementById('patient-phone');
+            const phoneError = document.getElementById('phone-error');
+            const phoneCount = document.getElementById('phone-count');
+
+            if (phoneInput) {
+                // Allow only numbers
+                phoneInput.addEventListener('input', function(e) {
+                    // Remove any non-numeric characters
+                    this.value = this.value.replace(/\D/g, '');
+                    
+                    // Update character count
+                    const count = this.value.length;
+                    phoneCount.textContent = `${count}/10`;
+                    
+                    // Validate phone number
+                    validatePhoneNumber(this.value);
+                });
+
+                // Prevent paste of non-numeric characters
+                phoneInput.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                    // Extract only numbers from pasted text
+                    const numbersOnly = pastedText.replace(/\D/g, '');
+                    document.execCommand('insertText', false, numbersOnly);
+                });
+
+                // Validate on blur
+                phoneInput.addEventListener('blur', function() {
+                    validatePhoneNumber(this.value);
+                });
+
+                // Validate on form submission
+                document.getElementById('appointment-form').addEventListener('submit', function(e) {
+                    if (!validatePhoneNumber(phoneInput.value)) {
+                        e.preventDefault();
+                        phoneError.style.display = 'block';
+                        phoneInput.classList.remove('phone-valid');
+                        phoneInput.classList.add('phone-invalid');
+                        phoneInput.focus();
+                        return false;
+                    }
+                });
+            }
+
+            // Phone validation function
+            function validatePhoneNumber(phoneNumber) {
+                const phoneRegex = /^[0-9]{10}$/;
+                
+                if (phoneRegex.test(phoneNumber)) {
+                    phoneError.style.display = 'none';
+                    phoneInput.classList.remove('phone-invalid');
+                    phoneInput.classList.add('phone-valid');
+                    return true;
+                } else {
+                    phoneError.style.display = 'block';
+                    phoneInput.classList.remove('phone-valid');
+                    phoneInput.classList.add('phone-invalid');
+                    return false;
+                }
+            }
+
             // Appointment Modal Functionality
             const modal = document.getElementById('appointment-modal');
             const closeModalBtn = document.getElementById('close-modal');
@@ -870,6 +985,14 @@
                     
                     doctorIdInput.value = doctorId;
                     doctorNameSpan.textContent = doctorName;
+                    
+                    // Reset phone validation when modal opens
+                    if (phoneInput) {
+                        phoneInput.value = '';
+                        phoneCount.textContent = '0/10';
+                        phoneError.style.display = 'none';
+                        phoneInput.classList.remove('phone-valid', 'phone-invalid');
+                    }
                     
                     modal.classList.remove('hidden');
                 });
@@ -891,6 +1014,14 @@
             if (appointmentForm) {
                 appointmentForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
+                    
+                    // Validate phone number before submission
+                    if (!validatePhoneNumber(phoneInput.value)) {
+                        phoneError.style.display = 'block';
+                        phoneInput.classList.add('phone-invalid');
+                        phoneInput.focus();
+                        return;
+                    }
                     
                     const messageDiv = document.getElementById('bookingMessage');
                     const submitBtn = this.querySelector('button[type="submit"]');
@@ -932,6 +1063,14 @@
                             
                             // Reset form
                             this.reset();
+                            
+                            // Reset phone validation
+                            if (phoneInput) {
+                                phoneInput.value = '';
+                                phoneCount.textContent = '0/10';
+                                phoneError.style.display = 'none';
+                                phoneInput.classList.remove('phone-valid', 'phone-invalid');
+                            }
                             
                             // Close modal after 2 seconds
                             setTimeout(() => {

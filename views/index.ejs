@@ -9,7 +9,7 @@
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-    integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+    integrity="sha512-2SwdPD6INVZ/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
   />
@@ -159,6 +159,35 @@
       margin-top: 1rem;
       border-radius: 0.375rem;
     }
+    
+    /* Phone number validation styles */
+    .phone-error {
+      display: none;
+      color: #dc2626;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+    
+    .phone-valid {
+      border-color: #10b981;
+    }
+    
+    .phone-invalid {
+      border-color: #dc2626;
+    }
+    
+    .char-count {
+      font-size: 12px;
+      margin-top: 2px;
+    }
+    
+    .char-count.valid {
+      color: #10b981;
+    }
+    
+    .char-count.invalid {
+      color: #dc2626;
+    }
   </style>
 </head>
 
@@ -281,9 +310,24 @@
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-phone text-gray-400"></i>
               </div>
-              <input type="text" id="docPhone" placeholder="Enter your phone number" required
-                class="input-field w-full border border-gray-300 rounded-lg pl-10 pr-3 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none" name="phone"/>
+              <input type="tel" 
+                     id="docPhone" 
+                     placeholder="Enter 10-digit mobile number" 
+                     required
+                     maxlength="10"
+                     minlength="10"
+                     pattern="[0-9]{10}"
+                     class="input-field phone-number-input w-full border border-gray-300 rounded-lg pl-10 pr-10 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none" 
+                     name="phone"/>
+              <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <span id="phone-count" class="text-xs text-gray-400">0/10</span>
+              </div>
             </div>
+            <div class="phone-error" id="docPhone-error">
+              <i class="fas fa-exclamation-circle mr-1"></i>
+              Please enter exactly 10 digits (numbers only)
+            </div>
+            <div id="phone-char-count" class="char-count text-right"></div>
           </div>
 
           <div class="md:col-span-2">
@@ -482,6 +526,80 @@
     doctorBtn.addEventListener('click', () => showForm(1));
     patientBtn.addEventListener('click', () => showForm(2));
 
+    // Phone number validation and formatting for Doctor Registration
+    const docPhoneInput = document.getElementById('docPhone');
+    const docPhoneError = document.getElementById('docPhone-error');
+    const phoneCount = document.getElementById('phone-count');
+    const phoneCharCount = document.getElementById('phone-char-count');
+
+    if (docPhoneInput) {
+      // Allow only numbers
+      docPhoneInput.addEventListener('input', function(e) {
+        // Remove any non-numeric characters
+        this.value = this.value.replace(/\D/g, '');
+        
+        // Update character count
+        const count = this.value.length;
+        phoneCount.textContent = `${count}/10`;
+        
+        // Update character count display
+        phoneCharCount.textContent = `${count} characters`;
+        if (count === 10) {
+          phoneCharCount.classList.remove('invalid');
+          phoneCharCount.classList.add('valid');
+        } else {
+          phoneCharCount.classList.remove('valid');
+          phoneCharCount.classList.add('invalid');
+        }
+        
+        // Validate phone number
+        validateDoctorPhoneNumber(this.value);
+      });
+
+      // Prevent paste of non-numeric characters
+      docPhoneInput.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        // Extract only numbers from pasted text
+        const numbersOnly = pastedText.replace(/\D/g, '');
+        document.execCommand('insertText', false, numbersOnly);
+      });
+
+      // Validate on blur
+      docPhoneInput.addEventListener('blur', function() {
+        validateDoctorPhoneNumber(this.value);
+      });
+
+      // Validate on form submission
+      doctorForm.addEventListener('submit', function(e) {
+        if (!validateDoctorPhoneNumber(docPhoneInput.value)) {
+          e.preventDefault();
+          docPhoneError.style.display = 'block';
+          docPhoneInput.classList.remove('phone-valid');
+          docPhoneInput.classList.add('phone-invalid');
+          docPhoneInput.focus();
+          return false;
+        }
+      });
+    }
+
+    // Doctor phone validation function
+    function validateDoctorPhoneNumber(phoneNumber) {
+      const phoneRegex = /^[0-9]{10}$/;
+      
+      if (phoneRegex.test(phoneNumber)) {
+        docPhoneError.style.display = 'none';
+        docPhoneInput.classList.remove('phone-invalid');
+        docPhoneInput.classList.add('phone-valid');
+        return true;
+      } else {
+        docPhoneError.style.display = 'block';
+        docPhoneInput.classList.remove('phone-valid');
+        docPhoneInput.classList.add('phone-invalid');
+        return false;
+      }
+    }
+
     // File Upload Handling for Medical License
     const licenseUploadContainer = document.getElementById('licenseUploadContainer');
     const medicalLicenseInput = document.getElementById('medicalLicense');
@@ -596,6 +714,14 @@
     doctorForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       
+      // Validate phone number before submission
+      if (!validateDoctorPhoneNumber(docPhoneInput.value)) {
+        docPhoneError.style.display = 'block';
+        docPhoneInput.classList.add('phone-invalid');
+        docPhoneInput.focus();
+        return;
+      }
+      
       const messageDiv = document.getElementById('doctorRegMessage');
       const submitBtn = this.querySelector('button[type="submit"]');
       const originalText = submitBtn.textContent;
@@ -642,6 +768,15 @@
           messageDiv.textContent = data.message;
           messageDiv.classList.remove('hidden');
           this.reset();
+          
+          // Reset phone validation
+          if (docPhoneInput) {
+            docPhoneInput.value = '';
+            phoneCount.textContent = '0/10';
+            phoneCharCount.textContent = '';
+            docPhoneError.style.display = 'none';
+            docPhoneInput.classList.remove('phone-valid', 'phone-invalid');
+          }
           
           // Reset file preview
           filePreview.classList.add('hidden');

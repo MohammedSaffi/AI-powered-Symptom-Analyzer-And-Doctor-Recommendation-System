@@ -6,33 +6,19 @@ import generateCode from "../services/uniqueID.js";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { sendAppointmentConfirmationEmail } from "../services/emailService.js";
-import fs from "fs";
-import path from "path";
+import stream from "stream";
 
 const doctorRouter = Router();
 
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
 });
 
-// Configure multer for file uploads (temporary storage)
-const storage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    const uploadDir = "uploads/";
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    callback(null, uploadDir);
-  },
-  filename: (req, file, callback) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    callback(null, uniqueSuffix + "-" + file.originalname);
-  },
-});
+// Configure multer for memory storage (no local files)
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,
@@ -59,6 +45,32 @@ const upload = multer({
   },
 });
 
+// Helper function to upload buffer to Cloudinary
+const uploadToCloudinary = (fileBuffer, folder, publicIdPrefix, resourceType = 'auto') => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: folder,
+        resource_type: resourceType,
+        public_id: `${publicIdPrefix}_${Date.now()}`,
+        transformation: [{ quality: "auto" }, { format: "auto" }],
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    );
+
+    // Create a readable stream from buffer and pipe to Cloudinary
+    const bufferStream = new stream.PassThrough();
+    bufferStream.end(fileBuffer);
+    bufferStream.pipe(uploadStream);
+  });
+};
+
 // Middleware to check if doctor is logged in
 const isDoctorLoggedIn = (req, res, next) => {
   if (req.session && req.session.doctorId) {
@@ -67,7 +79,7 @@ const isDoctorLoggedIn = (req, res, next) => {
   res.redirect("/doctorLogin");
 };
 
-// Doctor Registration - UPDATED TO HANDLE FILE UPLOAD
+// Doctor Registration - UPDATED TO UPLOAD DIRECTLY TO CLOUDINARY
 doctorRouter.post(
   "/register",
   upload.single("medicalLicense"),
@@ -86,10 +98,6 @@ doctorRouter.post(
 
       // Check if medical license file was uploaded
       if (!req.file) {
-        // Clean up if there's an uploaded file
-        if (req.file && fs.existsSync(req.file.path)) {
-          fs.unlinkSync(req.file.path);
-        }
         return res.status(400).json({
           success: false,
           message: "Medical license file is required",
@@ -99,10 +107,6 @@ doctorRouter.post(
       // Check if doctor already exists
       const existingDoctor = await DoctorModel.findOne({ email });
       if (existingDoctor) {
-        // Clean up uploaded file
-        if (fs.existsSync(req.file.path)) {
-          fs.unlinkSync(req.file.path);
-        }
         return res.status(400).json({
           success: false,
           message: "Doctor with this email already exists",
@@ -110,15 +114,12 @@ doctorRouter.post(
       }
 
       try {
-        // Upload medical license to Cloudinary
-        const cloudinaryResult = await cloudinary.uploader.upload(
-          req.file.path,
-          {
-            folder: "doctor-licenses",
-            resource_type: "auto", // Auto-detect resource type (image or raw for PDF)
-            public_id: `license_${Date.now()}_${email}`,
-            transformation: [{ quality: "auto" }, { format: "auto" }],
-          },
+        // Upload medical license to Cloudinary directly from buffer
+        const cloudinaryResult = await uploadToCloudinary(
+          req.file.buffer,
+          "doctor-licenses",
+          `license_${email}`,
+          req.file.mimetype === 'application/pdf' ? 'raw' : 'image'
         );
 
         // Hash password
@@ -145,11 +146,6 @@ doctorRouter.post(
           licenseUploadedAt: new Date(),
         });
 
-        // Clean up the temporary file
-        if (fs.existsSync(req.file.path)) {
-          fs.unlinkSync(req.file.path);
-        }
-
         res.status(201).json({
           success: true,
           message:
@@ -158,10 +154,6 @@ doctorRouter.post(
           medicalLicenseUrl: cloudinaryResult.secure_url,
         });
       } catch (cloudinaryError) {
-        // Clean up temporary file if Cloudinary upload fails
-        if (req.file && fs.existsSync(req.file.path)) {
-          fs.unlinkSync(req.file.path);
-        }
         console.error("Cloudinary upload error:", cloudinaryError);
         return res.status(500).json({
           success: false,
@@ -170,15 +162,6 @@ doctorRouter.post(
         });
       }
     } catch (error) {
-      // Clean up temporary file if any error occurs
-      if (req.file && fs.existsSync(req.file.path)) {
-        try {
-          fs.unlinkSync(req.file.path);
-        } catch (unlinkError) {
-          console.error("Error cleaning up file:", unlinkError);
-        }
-      }
-
       console.error("Doctor registration error:", error);
       res.status(500).json({
         success: false,
@@ -311,7 +294,7 @@ doctorRouter.get("/profile", isDoctorLoggedIn, async (req, res) => {
   }
 });
 
-// Update Doctor Profile - UPDATED TO INCLUDE HOSPITAL NAME
+// Update Doctor Profile
 doctorRouter.post("/profile/update", isDoctorLoggedIn, async (req, res) => {
   try {
     const doctorId = req.session.doctorId;
@@ -319,7 +302,7 @@ doctorRouter.post("/profile/update", isDoctorLoggedIn, async (req, res) => {
 
     const updatedDoctor = await DoctorModel.findOneAndUpdate(
       { doctorid: doctorId },
-      { name, phone, specialization, location, hospitalName }, // Include hospital name
+      { name, phone, specialization, location, hospitalName },
       { new: true },
     ).select("-passwordHash");
 
@@ -337,7 +320,7 @@ doctorRouter.post("/profile/update", isDoctorLoggedIn, async (req, res) => {
   }
 });
 
-// Upload Profile Picture
+// Upload Profile Picture - UPDATED TO UPLOAD DIRECTLY TO CLOUDINARY
 doctorRouter.post(
   "/profile/picture",
   isDoctorLoggedIn,
@@ -354,10 +337,13 @@ doctorRouter.post(
       }
 
       try {
-        // Upload to Cloudinary
-        const cloudinaryRes = await cloudinary.uploader.upload(req.file.path, {
-          folder: "doctor-profiles",
-        });
+        // Upload to Cloudinary directly from buffer
+        const cloudinaryRes = await uploadToCloudinary(
+          req.file.buffer,
+          "doctor-profiles",
+          `profile_${doctorId}`,
+          'image'
+        );
 
         // Update doctor profile picture
         const updatedDoctor = await DoctorModel.findOneAndUpdate(
@@ -369,11 +355,6 @@ doctorRouter.post(
           { new: true },
         ).select("-passwordHash");
 
-        // Clean up temporary file
-        if (fs.existsSync(req.file.path)) {
-          fs.unlinkSync(req.file.path);
-        }
-
         res.json({
           success: true,
           message: "Profile picture uploaded successfully",
@@ -381,10 +362,6 @@ doctorRouter.post(
           doctor: updatedDoctor,
         });
       } catch (cloudinaryError) {
-        // Clean up temporary file
-        if (req.file && fs.existsSync(req.file.path)) {
-          fs.unlinkSync(req.file.path);
-        }
         console.error("Cloudinary upload error:", cloudinaryError);
         throw cloudinaryError;
       }
